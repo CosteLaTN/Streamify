@@ -1,19 +1,19 @@
 package com.example.streamifymvp.SourceDeDonnees
 
 import Profil
-import android.icu.text.SimpleDateFormat
+import java.text.SimpleDateFormat
 import com.example.streamifymvp.Domaine.Modeles.ShowDate
 import java.util.Locale
 
-class SourceDeDonneeBidon {
+class SourceDeDonneeBidon : ISourceDeDonnee {
 
     private var profil: Profil? = Profil("Jean Dupont", "jdupont") // Exemple de données
 
-    fun obtenirProfil(): Profil? {
+    override fun obtenirProfil(): Profil? {
         return profil
     }
 
-    fun modifierNomUtilisateur(nouveauNom: String): Boolean {
+    override fun modifierNomUtilisateur(nouveauNom: String): Boolean {
         return if (profil != null) {
             profil!!.nom = nouveauNom
             true
@@ -22,7 +22,7 @@ class SourceDeDonneeBidon {
         }
     }
 
-    fun modifierUsername(nouveauUsername: String): Boolean {
+    override fun modifierUsername(nouveauUsername: String): Boolean {
         return if (profil != null) {
             profil!!.username = nouveauUsername
             true
@@ -33,12 +33,9 @@ class SourceDeDonneeBidon {
 
     private val historique = listOf("Daft Punk", "Discovery", "League of legends")
 
-    fun obtenirHistoriqueRecherche(): List<String> {
+    override fun obtenirHistoriqueRecherche(): List<String> {
         return historique
     }
-
-
-
 
     private val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     private val datesDisponibles = listOf(
@@ -61,7 +58,8 @@ class SourceDeDonneeBidon {
             location = "Berlin, Allemagne"
         )
     )
-    fun obtenirToutesLesDatesDeShow(): List<ShowDate> {
+
+    override fun obtenirToutesLesDatesDeShow(): List<ShowDate> {
         return datesDisponibles
     }
 }

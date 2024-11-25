@@ -4,30 +4,29 @@ import com.example.streamifymvp.Domaine.Modeles.Chanson
 import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
-class LecturePresentateur(private val modele: Modele) : CoroutineScope {
+class LecturePresentateur(
+    private val modele: Modele,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
 
     private val job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+    private val scope = CoroutineScope(Dispatchers.Main + job)
 
     fun ajouterAuxFavoris(chanson: Chanson) {
-        launch {
-            withContext(Dispatchers.IO) {
+        scope.launch {
+            withContext(ioDispatcher) {
                 modele.ajouterChansonAuxFavoris(chanson)
             }
         }
     }
 
     fun obtenirFavoris(onResult: (ListeDeLecture?) -> Unit) {
-        launch {
-            val favoris = withContext(Dispatchers.IO) { modele.obtenirFavoris() }
+        scope.launch {
+            val favoris = withContext(ioDispatcher) { modele.obtenirFavoris() }
             onResult(favoris)
         }
     }
-
-
 
     fun onDestroy() {
         job.cancel()

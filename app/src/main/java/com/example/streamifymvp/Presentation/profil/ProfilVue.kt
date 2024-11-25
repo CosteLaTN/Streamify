@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.streamifymvp.R
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.Locale
 
@@ -34,8 +35,11 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
         nameTextView = view.findViewById(R.id.name_profile)
         usernameTextView = view.findViewById(R.id.username_profile)
 
-        // Initialisez le Présentateur
-        presentateur = ProfilPrésentateur(this)
+        // Créer une instance du service
+        val service = SourceDeDonneeBidon()
+
+        // Initialisez le Présentateur en passant le service
+        presentateur = ProfilPrésentateur(this, service = service)
 
         return view
     }
@@ -49,7 +53,6 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
         lateinit var navController: NavController
 
         navController = findNavController()
-
 
         // Ajouter les listeners pour les actions utilisateur
         view.findViewById<Button>(R.id.edit_profile_button_profile).setOnClickListener {
@@ -85,14 +88,14 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
             presentateur.gererChangementLangue()
         }
 
-        val boutonHistorique: LinearLayout  = view.findViewById(R.id.btnHistoriqueProfil)
+        val boutonHistorique: LinearLayout = view.findViewById(R.id.btnHistoriqueProfil)
 
         boutonHistorique.setOnClickListener {
             val navController = findNavController()
             navController.navigate(R.id.action_profilVue_to_historiqueVue)
         }
 
-        val boutonRappel: LinearLayout  = view.findViewById(R.id.btnRappel_profile)
+        val boutonRappel: LinearLayout = view.findViewById(R.id.btnRappel_profile)
 
         boutonRappel.setOnClickListener {
             val navController = findNavController()
@@ -121,8 +124,6 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
                 else -> false
             }
         }
-
-
     }
 
     override fun afficherNomUtilisateur(nom: String) {
@@ -189,7 +190,4 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
             .setNegativeButton("Annuler", null)
             .show()
     }
-
-
-
 }

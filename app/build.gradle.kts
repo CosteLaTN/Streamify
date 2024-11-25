@@ -54,6 +54,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.mockito.android)
     testImplementation (libs.mockk)
+    testImplementation (libs.kotlinx.coroutines.test.v190)
 
 
 }

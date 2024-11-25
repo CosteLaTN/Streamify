@@ -4,10 +4,10 @@ import kotlin.coroutines.CoroutineContext
 import com.example.streamifymvp.Domaine.Modeles.ShowDate
 
 class ShowDatesPrésentateur(
-    private val vue: ContratVuePrésentateurShowDates.IShowDatesVue
+    private val vue: ContratVuePrésentateurShowDates.IShowDatesVue,
+    private val service: SourceDeDonneeBidon = SourceDeDonneeBidon()
 ) : ContratVuePrésentateurShowDates.IShowDatesPrésentateur, CoroutineScope {
 
-    private val service = SourceDeDonneeBidon()
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job

@@ -1,17 +1,18 @@
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
+import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HistoriquePrésentateur(
-    private val vue: ContratVuePrésentateurHistorique.IHistoriqueVue
+    private val vue: ContratVuePrésentateurHistorique.IHistoriqueVue,
+    private val service: ISourceDeDonnee,
+    private val ioDispatcher: CoroutineDispatcher
 ) : ContratVuePrésentateurHistorique.IHistoriquePrésentateur {
 
-    private val service = SourceDeDonneeBidon()
-
     override fun chargerHistoriqueRecherche() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(ioDispatcher).launch {
             try {
                 val historique = service.obtenirHistoriqueRecherche()
 
