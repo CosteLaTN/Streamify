@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- page de profile -->
+    <string name="app_name">Streamify</string>
+    <string name="profile_title">Profile</string>
+    <string name="add_status">Add Status</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="search_history">Search History</string>
+    <string name="find_show">Find a Show</string>
+    <string name="language_change">Change the language</string>
+    <!-- page d'accueuil -->
+    <string name="nouveaute">New Releases</string>
+    <string name="artistesPreferes">Your Favorite Artists</string>
+    <!-- page de playlist -->
+    <string name="playlist_title">My Playlist</string>
+    <string name="song_count">• 50 songs</string>
+    <string name="duration">• 3 hr 30 min</string>
+</resources>
+

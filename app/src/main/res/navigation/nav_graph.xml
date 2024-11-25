@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/ecranAccueil">
+
+    <fragment
+        android:id="@+id/ecranAccueil"
+        android:name="com.example.streamify.Presentation.Accueil.EcranAccueil"
+        android:label="fragment_ecran_accueil"
+        tools:layout="@layout/fragment_ecran_accueil">
+        <action
+            android:id="@+id/actionEcranAccueilToEcranLecture"
+            app:destination="@id/ecranLecture" />
+        <action
+            android:id="@+id/action_ecranAccueil_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_ecranAccueil_to_profilVue"
+            app:destination="@id/profilVue" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ecranLecture"
+        android:name="com.example.streamifymvp.Presentation.Lecture.EcranLecture"
+        android:label="fragment_ecran_lecture"
+        tools:layout="@layout/fragment_ecran_lecture">
+        <argument
+            android:name="chansonId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_ecranLecture_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ecranListeDeLecture"
+        android:name="com.example.streamifymvp.presentation.ListeDeLecture.EcranListeDeLecture"
+        android:label="fragment_ecran_liste_de_lecture"
+        tools:layout="@layout/fragment_ecran_liste_de_lecture">
+        <action
+            android:id="@+id/action_ecranListeDeLecture_to_ecranChansonsLDL"
+            app:destination="@id/ecranChansonsLDL" />
+        <argument
+            android:name="playlistId"
+            app:argType="integer" />
+        <argument
+            android:name="chansonId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_ecranListeDeLecture_to_profilVue"
+            app:destination="@id/profilVue" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ecranChansonsLDL"
+        android:name="com.example.streamifymvp.presentation.Chansons.EcranChansonsLDL"
+        android:label="EcranChansonsLDL" >
+        <action
+            android:id="@+id/action_ecranChansonsLDL_to_ecranLecture"
+            app:destination="@id/ecranLecture" />
+        <action
+            android:id="@+id/action_ecranChansonsLDL_to_profilVue"
+            app:destination="@id/profilVue" />
+        <action
+            android:id="@+id/action_ecranChansonsLDL_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+    </fragment>
+    <fragment
+        android:id="@+id/profilVue"
+        android:name="ProfilVue"
+        android:label="ProfilVue" >
+        <action
+            android:id="@+id/action_profilVue_to_historiqueVue"
+            app:destination="@id/historiqueVue" />
+        <action
+            android:id="@+id/action_profilVue_to_showDatesVue"
+            app:destination="@id/showDatesVue" />
+        <action
+            android:id="@+id/action_profilVue_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+    </fragment>
+    <fragment
+        android:id="@+id/historiqueVue"
+        android:name="HistoriqueVue"
+        android:label="HistoriqueVue" >
+        <action
+            android:id="@+id/action_historiqueVue_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_historiqueVue_to_profilVue"
+            app:destination="@id/profilVue" />
+    </fragment>
+    <fragment
+        android:id="@+id/showDatesVue"
+        android:name="ShowDatesVue"
+        android:label="ShowDatesVue" >
+        <action
+            android:id="@+id/action_showDatesVue_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_showDatesVue_to_profilVue"
+            app:destination="@id/profilVue" />
+    </fragment>
+
+</navigation>

@@ -1,0 +1,48 @@
+package com.example.streamifymvp.Domaine.Service
+
+import com.example.streamifymvp.Domaine.Modeles.Artiste
+import com.example.streamifymvp.Domaine.Modeles.Chanson
+import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
+import com.example.streamifymvp.SourceDeDonnees.ChansonSourceBidon
+import com.example.streamifymvp.SourceDeDonnees.ChansonSourceDeDonnes
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+class ChansonService(private val source: ChansonSourceDeDonnes = ChansonSourceBidon.instance) {
+
+    fun obtenirToutesLesChansons(): List<Chanson> {
+        return source.obtenirToutesLesChansons()
+    }
+
+    fun obtenirNouveautés(): List<Chanson> {
+
+        val limite = "2018-11-17"
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateLimite = dateFormat.parse(limite)
+
+        return source.obtenirToutesLesChansons().filter { chanson ->
+            try {
+                val dateChanson = dateFormat.parse(chanson.datePublication)
+                val isAfter = dateChanson != null && dateChanson.after(dateLimite)
+                isAfter
+            } catch (e: ParseException) {
+                false
+            }
+        }
+    }
+
+
+    fun rechercherChansons(recherche: String): List<Chanson> {
+        val rechercheMinuscule = recherche.lowercase()
+        return source.obtenirToutesLesChansons().filter {
+            it.nom.lowercase().contains(rechercheMinuscule) || it.genre.lowercase().contains(rechercheMinuscule)
+        }
+    }
+
+
+    fun ajouterAuxFavoris(chanson: Chanson) {
+        source.ajouterAuxFavoris(chanson)
+    }
+
+}

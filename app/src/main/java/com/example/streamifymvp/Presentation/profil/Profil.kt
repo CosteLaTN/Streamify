@@ -1,0 +1,1 @@
+data class Profil(var nom: String, var username: String)

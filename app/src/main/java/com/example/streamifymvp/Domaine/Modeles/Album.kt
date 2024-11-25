@@ -1,0 +1,13 @@
+package com.example.streamifymvp.Domaine.Modeles
+
+import java.time.LocalDate
+
+data class Album(
+    val id: Int = 0,
+    val nom: String,
+    val chansons: MutableList<Chanson> = mutableListOf(),
+    val datePublication: LocalDate,
+    val dureeAlbum: String,
+    val imageAlbum: Int,
+    val nomArtiste: Artiste
+     )
