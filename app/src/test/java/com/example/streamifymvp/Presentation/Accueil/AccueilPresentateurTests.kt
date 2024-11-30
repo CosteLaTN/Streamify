@@ -2,8 +2,8 @@ package com.example.streamifymvp.Presentation.Accueil
 
 import com.example.streamify.Presentation.Accueil.AccueilPresentateur
 import com.example.streamify.Presentation.Accueil.AccueilVue
-import com.example.streamifymvp.Domaine.Modeles.Artiste
-import com.example.streamifymvp.Domaine.Modeles.Chanson
+import com.example.streamifymvp.Domaine.entitees.Artiste
+import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Presentation.Modele
 import io.mockk.every
 import io.mockk.mockk

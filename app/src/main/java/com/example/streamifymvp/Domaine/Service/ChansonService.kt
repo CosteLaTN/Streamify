@@ -1,15 +1,13 @@
 package com.example.streamifymvp.Domaine.Service
 
-import com.example.streamifymvp.Domaine.Modeles.Artiste
-import com.example.streamifymvp.Domaine.Modeles.Chanson
-import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceBidon
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceDeDonnes
+import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ChansonService(private val source: ChansonSourceDeDonnes = ChansonSourceBidon.instance) {
+class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.instance) {
 
     fun obtenirToutesLesChansons(): List<Chanson> {
         return source.obtenirToutesLesChansons()

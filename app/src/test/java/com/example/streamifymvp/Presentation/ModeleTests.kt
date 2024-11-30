@@ -1,8 +1,8 @@
 package com.example.streamifymvp.Presentation
 
-import com.example.streamifymvp.Domaine.Modeles.Artiste
-import com.example.streamifymvp.Domaine.Modeles.Chanson
-import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
+import com.example.streamifymvp.Domaine.entitees.Artiste
+import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Domaine.Service.ArtisteService
 import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.ListeDeLectureService

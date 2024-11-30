@@ -1,7 +1,7 @@
 package com.example.streamify.Presentation.Accueil
 
-import com.example.streamifymvp.Domaine.Modeles.Artiste
-import com.example.streamifymvp.Domaine.Modeles.Chanson
+import com.example.streamifymvp.Domaine.entitees.Artiste
+import com.example.streamifymvp.Domaine.entitees.Chanson
 
 
 interface AccueilVue {

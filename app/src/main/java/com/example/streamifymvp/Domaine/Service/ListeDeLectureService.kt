@@ -1,10 +1,10 @@
 package com.example.streamifymvp.Domaine.Service
 
-import com.example.streamifymvp.Domaine.Modeles.Chanson
-import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceDeDonnes
+import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
+import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 
-class ListeDeLectureService(private val chansonSource: ChansonSourceDeDonnes) {
+class ListeDeLectureService(private val chansonSource: ISourceDeDonnee) {
 
     fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture> {
         return chansonSource.obtenirToutesLesListesDeLecture()
@@ -32,6 +32,7 @@ class ListeDeLectureService(private val chansonSource: ChansonSourceDeDonnes) {
     //        }
     //    }
    // }
+
 
 
 

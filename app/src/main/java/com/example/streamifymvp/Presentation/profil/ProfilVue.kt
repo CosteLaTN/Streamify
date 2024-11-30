@@ -31,14 +31,14 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_ecran_profil, container, false)
 
-        // Initialisez les vues
+
         nameTextView = view.findViewById(R.id.name_profile)
         usernameTextView = view.findViewById(R.id.username_profile)
 
-        // Créer une instance du service
+
         val service = SourceDeDonneeBidon()
 
-        // Initialisez le Présentateur en passant le service
+
         presentateur = ProfilPrésentateur(this, service = service)
 
         return view
@@ -47,32 +47,32 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Charger les informations du profil
+
         presentateur.chargerProfil()
 
         lateinit var navController: NavController
 
         navController = findNavController()
 
-        // Ajouter les listeners pour les actions utilisateur
+
         view.findViewById<Button>(R.id.edit_profile_button_profile).setOnClickListener {
             afficherDialogueModificationNom()
         }
 
         view.findViewById<Button>(R.id.add_status_button_profile).setOnClickListener {
-            // Créez un champ de saisie
+
             val input = EditText(requireContext()).apply {
                 hint = "Chanson du jour!"
             }
 
-            // Affichez la boîte de dialogue pour entrer la chanson du jour
+
             AlertDialog.Builder(requireContext())
                 .setTitle("Veuillez ajouter votre chanson du jour!")
                 .setView(input)
                 .setPositiveButton("Sauvegarder") { _, _ ->
                     val songOfTheDay = input.text.toString()
                     if (songOfTheDay.isNotBlank()) {
-                        // Transmettre la chanson au Présentateur pour traitement
+
                         presentateur.sauvegarderChansonDuJour(songOfTheDay)
                     } else {
                         afficherMessageErreur("La chanson du jour ne peut pas être vide.")
@@ -83,7 +83,7 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
                 .show()
         }
 
-        // Gérer le changement de langue
+
         view.findViewById<LinearLayout>(R.id.btnChangerLangue).setOnClickListener {
             presentateur.gererChangementLangue()
         }

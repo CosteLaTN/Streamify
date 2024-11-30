@@ -1,13 +1,11 @@
-package com.example.streamifymvp.Presentation.ShowDates
+package com.example.streamifymvp.Presentation.showDates
 
-import android.content.Intent
-import android.provider.CalendarContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.streamifymvp.Domaine.Modeles.ShowDate
+import com.example.streamifymvp.Domaine.entitees.ShowDate
 import com.example.streamifymvp.R
 
 class ShowDatesAdapter(

@@ -14,13 +14,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
+import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
+import com.example.streamifymvp.Presentation.Lecture.IEcranLecture
 import com.example.streamifymvp.Presentation.ListeDeLecture.Adapter.ListeDeLectureAdapter
+import com.example.streamifymvp.Presentation.ListeDeLecture.IEcranListeDeLecture
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceBidon
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class EcranListeDeLecture : Fragment() {
+class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
 
     private lateinit var adapter: ListeDeLectureAdapter
 
@@ -77,7 +79,7 @@ class EcranListeDeLecture : Fragment() {
         rafraichirListeDeLecture()
     }
 
-    private fun afficherDialogCreationPlaylist() {
+    override fun afficherDialogCreationPlaylist() {
         val builder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.formulaire_creation_playlist, null)
@@ -98,19 +100,19 @@ class EcranListeDeLecture : Fragment() {
             .show()
     }
 
-    private fun ajouterNouvellePlaylist(nom: String) {
+    override fun ajouterNouvellePlaylist(nom: String) {
         val nouvellePlaylist = ListeDeLecture(
             id = System.currentTimeMillis().toInt(),
             nom = nom,
             chansons = mutableListOf()
         )
-        val chansonSource = ChansonSourceBidon.instance
+        val chansonSource = SourceDeDonneeBidon.instance
         chansonSource.ajouterPlaylist(nouvellePlaylist)
         rafraichirListeDeLecture()
     }
 
-    private fun rafraichirListeDeLecture() {
-        val chansonSource = ChansonSourceBidon.instance
+    override fun rafraichirListeDeLecture() {
+        val chansonSource = SourceDeDonneeBidon.instance
         val playlists = chansonSource.obtenirToutesLesListesDeLecture()
         adapter.updateData(playlists)
     }

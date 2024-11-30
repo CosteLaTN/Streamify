@@ -1,4 +1,4 @@
-package com.example.streamifymvp.Domaine.Modeles
+package com.example.streamifymvp.Domaine.entitees
 
 import java.util.Date
 

@@ -11,16 +11,15 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.Navigation
-import com.example.streamifymvp.Domaine.Modeles.Chanson
+import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.Service.ArtisteService
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.ArtisteSourceBidon
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceBidon
 import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 
-class EcranLecture : Fragment() {
+class EcranLecture : Fragment(), IEcranLecture  {
 
     private lateinit var progressBar: SeekBar
     private lateinit var btnPlayPause: ImageButton
@@ -43,7 +42,7 @@ class EcranLecture : Fragment() {
     private lateinit var chansonActuelle: Chanson
 
     private val handler = Handler()
-    private val chansonSourceBidon = ChansonSourceBidon.instance
+    private val chansonSourceBidon = SourceDeDonneeBidon.instance
     private lateinit var présentateur: LecturePresentateur
 
     private val miseAJourBarreDeProgression = object : Runnable {
@@ -76,9 +75,9 @@ class EcranLecture : Fragment() {
         artistName = view.findViewById(R.id.artistName)
         imageAlbum = view.findViewById(R.id.imageAlbum)
 
-        val chansonService = ChansonService(ChansonSourceBidon.instance)
-        val artisteService = ArtisteService(ArtisteSourceBidon())
-        val listeDeLectureService = ListeDeLectureService(ChansonSourceBidon.instance)
+        val chansonService = ChansonService(SourceDeDonneeBidon.instance)
+        val artisteService = ArtisteService(SourceDeDonneeBidon())
+        val listeDeLectureService = ListeDeLectureService(SourceDeDonneeBidon.instance)
         val modele = Modele(chansonService, artisteService, listeDeLectureService)
         présentateur = LecturePresentateur(modele)
 
@@ -91,7 +90,7 @@ class EcranLecture : Fragment() {
         jouerChanson(chansonActuelle)
     }
 
-    private fun jouerChanson(chanson: Chanson) {
+    override fun jouerChanson(chanson: Chanson) {
         mediaPlayer?.release()
         handler.removeCallbacks(miseAJourBarreDeProgression)
 
@@ -117,13 +116,13 @@ class EcranLecture : Fragment() {
         handler.post(miseAJourBarreDeProgression)
     }
 
-    private fun jouerSuivante() {
+     override fun jouerSuivante() {
         currentSongIndex = (currentSongIndex + 1) % chansonsDuGenre.size
         chansonActuelle = chansonsDuGenre[currentSongIndex]
         jouerChanson(chansonActuelle)
     }
 
-    private fun setupListeners() {
+     override fun setupListeners() {
         btnPlaylist.setOnClickListener {
             afficherListeDeLecturePourAjout()
         }
@@ -148,12 +147,12 @@ class EcranLecture : Fragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // Arrêter la mise à jour automatique pendant le déplacement de la barre
+
                 handler.removeCallbacks(miseAJourBarreDeProgression)
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // Redémarrer la mise à jour de la barre une fois le déplacement terminé
+
                 handler.post(miseAJourBarreDeProgression)
             }
         })
@@ -193,7 +192,7 @@ class EcranLecture : Fragment() {
         }
     }
 
-    private fun updateFavoriteButtonIcon() {
+     override fun updateFavoriteButtonIcon() {
         présentateur.obtenirFavoris { favoris ->
             val chansonDansFavoris = favoris?.chansons?.contains(chansonActuelle) == true
             btnFavorite.setImageResource(
@@ -202,7 +201,7 @@ class EcranLecture : Fragment() {
         }
     }
 
-    private fun afficherListeDeLecturePourAjout() {
+     override fun afficherListeDeLecturePourAjout() {
         val playlists = chansonSourceBidon.obtenirToutesLesListesDeLecture()
         if (playlists.isEmpty()) {
             Toast.makeText(requireContext(), "Aucune playlist disponible.", Toast.LENGTH_SHORT).show()

@@ -1,8 +1,8 @@
 package com.example.streamifymvp.Presentation.EcranChansonsLDL
 
 import android.util.Log
-import com.example.streamifymvp.Domaine.Modeles.Chanson
-import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
+import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Presentation.Modele
 import io.mockk.every
 import io.mockk.mockk

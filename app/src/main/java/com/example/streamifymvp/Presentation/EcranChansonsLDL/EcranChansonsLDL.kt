@@ -15,13 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.ArtisteSourceBidon
 import com.example.streamifymvp.Domaine.Service.ChansonService
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceBidon
 import com.example.streamifymvp.Domaine.Service.ArtisteService
 import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
 import com.example.streamifymvp.Presentation.EcranChansonsLDL.Adapter.ChansonLDLAdapter
 import com.example.streamifymvp.Presentation.EcranChansonsLDL.EcranChansonsLDLPresentateur
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class EcranChansonsLDL : Fragment() {
@@ -48,9 +47,9 @@ class EcranChansonsLDL : Fragment() {
         }
 
         val modèle = Modele(
-            ChansonService(ChansonSourceBidon.instance),
-            ArtisteService(ArtisteSourceBidon()),
-            ListeDeLectureService(ChansonSourceBidon.instance)
+            ChansonService(SourceDeDonneeBidon.instance),
+            ArtisteService(SourceDeDonneeBidon()),
+            ListeDeLectureService(SourceDeDonneeBidon.instance)
         )
 
         présentateur = EcranChansonsLDLPresentateur(modèle)

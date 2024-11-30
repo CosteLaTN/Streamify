@@ -18,18 +18,18 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.streamifymvp.Domaine.Modeles.Artiste
-import com.example.streamifymvp.Domaine.Modeles.Chanson
+import com.example.streamifymvp.Domaine.entitees.Artiste
+import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.Service.ArtisteService
 import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
 import com.example.streamifymvp.Presentation.Accueil.Adapter.NouveauteAdapter
 import com.example.streamifymvp.Presentation.Accueil.Adapter.NouveauxArtistesAdapter
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.ArtisteSourceBidon
 import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.HistoriqueService
 import com.example.streamifymvp.Presentation.Modele
-import com.example.streamifymvp.SourceDeDonnees.ChansonSourceBidon
+import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class EcranAccueil : Fragment(), AccueilVue {
@@ -62,9 +62,9 @@ class EcranAccueil : Fragment(), AccueilVue {
 
         val historiqueService = HistoriqueService(requireContext())
 
-        val chansonService = ChansonService(ChansonSourceBidon.instance)
-        val artisteService = ArtisteService(ArtisteSourceBidon())
-        val listeDeLectureService = ListeDeLectureService(ChansonSourceBidon.instance)
+        val chansonService = ChansonService(SourceDeDonneeBidon.instance)
+        val artisteService = ArtisteService(SourceDeDonneeBidon())
+        val listeDeLectureService = ListeDeLectureService(SourceDeDonneeBidon.instance)
         val modèle = Modele(chansonService, artisteService, listeDeLectureService)
         présentateur = AccueilPresentateur(this, modèle)
         lateinit var navController: NavController

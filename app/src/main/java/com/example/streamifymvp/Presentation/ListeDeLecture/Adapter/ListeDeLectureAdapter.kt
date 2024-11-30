@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.streamifymvp.Domaine.Modeles.ListeDeLecture
+import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.R
 
 class ListeDeLectureAdapter(

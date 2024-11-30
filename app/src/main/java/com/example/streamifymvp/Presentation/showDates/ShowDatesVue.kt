@@ -1,3 +1,4 @@
+package com.example.streamifymvp.Presentation.showDates
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -12,11 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.streamifymvp.Domaine.Modeles.ShowDate
-import com.example.streamifymvp.Presentation.ShowDates.ShowDatesAdapter
+import com.example.streamifymvp.Domaine.entitees.ShowDate
 import com.example.streamifymvp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.*
 
 class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue {
 
@@ -35,23 +34,23 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize RecyclerView
+
         recyclerView = view.findViewById(R.id.recyclerViewShowDates)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initialize Presenter
+
         presentateur = ShowDatesPrésentateur(this)
 
-        // Initialize Adapter with an onClick event that opens Calendar
+
         adapter = ShowDatesAdapter(emptyList()) { showDate ->
             ouvrirCalendrier(showDate)
         }
         recyclerView.adapter = adapter
 
-        // Load dates via Presenter
+
         presentateur.chargerDates()
 
-        // Navigation setup
+
         navController = findNavController()
         val bottomNavigationView: BottomNavigationView = requireView().findViewById(R.id.bottomNavigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
@@ -79,7 +78,7 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
     }
 
     override fun afficherDates(dates: List<ShowDate>) {
-        // Update adapter with new data
+
         adapter.updateDates(dates)
     }
 
@@ -87,7 +86,7 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun ouvrirCalendrier(showDate: ShowDate) {
+    override fun ouvrirCalendrier(showDate: ShowDate) {
         val intent = Intent(Intent.ACTION_INSERT).apply {
             data = CalendarContract.Events.CONTENT_URI
             putExtra(CalendarContract.Events.TITLE, showDate.title)

@@ -1,7 +1,8 @@
+package com.example.streamifymvp.Presentation.showDates
+
 import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
-import com.example.streamifymvp.Domaine.Modeles.ShowDate
 
 class ShowDatesPrésentateur(
     private val vue: ContratVuePrésentateurShowDates.IShowDatesVue,

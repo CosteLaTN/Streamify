@@ -1,7 +1,7 @@
 /*package com.example.streamifymvp.SourceDeDonnees
 
-import com.example.streamifymvp.Domaine.Modeles.Album
-import com.example.streamifymvp.Domaine.Modeles.Chanson
+import com.example.streamifymvp.Domaine.entitees.Album
+import com.example.streamifymvp.Domaine.entitees.Chanson
 
 class AlbumService(private val source: AlbumSourceDeDonnees) {
 

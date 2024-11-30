@@ -1,4 +1,4 @@
-package com.example.streamifymvp.Domaine.Modeles
+package com.example.streamifymvp.Domaine.entitees
 
 data class Artiste(
     val id: Int = 0,

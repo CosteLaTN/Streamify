@@ -31,10 +31,10 @@ class HistoriqueVue : Fragment(), ContratVuePrésentateurHistorique.IHistoriqueV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialisation des vues
+
         listView = view.findViewById(R.id.history_list_view)
 
-        // Initialisation du service d'historique
+
         historiqueService = HistoriqueService(requireContext())
 
         chargerHistoriqueLocal()
