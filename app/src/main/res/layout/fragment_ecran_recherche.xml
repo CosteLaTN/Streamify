@@ -5,15 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.streamifymvp.Presentation.Recherche.FragmentEcranRecherche">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@drawable/bottom_navigation_gradient"
-        app:itemIconTint="@drawable/bottom_navigation_colors"
-        app:itemTextColor="@drawable/bottom_navigation_colors"
-        app:menu="@menu/menu" />
+
 
     <LinearLayout
         android:layout_width="match_parent"

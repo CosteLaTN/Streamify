@@ -1,6 +1,6 @@
 package com.example.streamifymvp.Presentation.Historique
 
-import HistoriquePrésentateur
+import com.example.streamifymvp.Presentation.Historique.HistoriquePrésentateur
 import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

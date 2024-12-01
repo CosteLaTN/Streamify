@@ -153,14 +153,7 @@
             </LinearLayout>
         </ScrollView>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_gravity="bottom"
-            android:layout_weight="1"
-            android:background="@drawable/bottom_navigation_gradient"
-            app:menu="@menu/menu" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

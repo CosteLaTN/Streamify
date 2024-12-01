@@ -1,4 +1,5 @@
 package com.example.streamifymvp.Presentation.showDates
+
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -16,11 +17,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.streamifymvp.Domaine.entitees.ShowDate
 import com.example.streamifymvp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.streamifymvp.Presentation.showDates.ContratVuePrésentateurShowDates
+import com.example.streamifymvp.Presentation.showDates.ShowDatesAdapter
+import com.example.streamifymvp.Presentation.showDates.ShowDatesPrésentateur
+
 
 class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue {
 
     private lateinit var presentateur: ContratVuePrésentateurShowDates.IShowDatesPrésentateur
-    lateinit var navController: NavController
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ShowDatesAdapter
 
@@ -37,44 +41,12 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
 
         recyclerView = view.findViewById(R.id.recyclerViewShowDates)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-
         presentateur = ShowDatesPrésentateur(this)
-
-
         adapter = ShowDatesAdapter(emptyList()) { showDate ->
             ouvrirCalendrier(showDate)
         }
         recyclerView.adapter = adapter
-
-
         presentateur.chargerDates()
-
-
-        navController = findNavController()
-        val bottomNavigationView: BottomNavigationView = requireView().findViewById(R.id.bottomNavigation)
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    Log.d("ShowDatesVue", "Navigating to Home")
-                    navController.navigate(R.id.ecranAccueil)
-                    true
-                }
-                R.id.nav_library -> {
-                    Log.d("ShowDatesVue", "Navigating to Library")
-                    navController.navigate(R.id.action_showDatesVue_to_ecranListeDeLecture)
-                    true
-                }
-                R.id.nav_profile -> {
-                    Log.d("ShowDatesVue", "Navigating to Profile")
-                    navController.navigate(R.id.action_showDatesVue_to_profilVue)
-                    true
-                }
-                else -> false
-            }
-        }
     }
 
     override fun afficherDates(dates: List<ShowDate>) {

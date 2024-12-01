@@ -9,9 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamifymvp.Domaine.Service.ArtisteService
@@ -24,7 +23,7 @@ import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.R
 import com.example.streamifymvp.SourceDeDonnees.HistoriqueDatabaseHelper
 import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
-import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
 
@@ -62,7 +61,6 @@ class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
 
         setupHistoriqueList()
         setupSearchListener()
-        setupBottomNavigation(view)
     }
 
     @SuppressLint("Range")
@@ -130,30 +128,6 @@ class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
             put(HistoriqueDatabaseHelper.COLUMN_RECHERCHE, recherche)
         }
         db.insert(HistoriqueDatabaseHelper.TABLE_HISTORIQUE, null, values)
-    }
-
-    private fun setupBottomNavigation(view: View) {
-        val navController = findNavController()
-        val bottomNavigationView: BottomNavigationView = view.findViewById(R.id.bottomNavigation)
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    navController.navigate(R.id.action_fragmentEcranRecherche_to_ecranAccueil)
-                    true
-                }
-                R.id.nav_library -> {
-                    navController.navigate(R.id.action_fragmentEcranRecherche_to_ecranListeDeLecture)
-                    true
-                }
-                R.id.nav_profile -> {
-                    navController.navigate(R.id.action_fragmentEcranRecherche_to_profilVue)
-                    true
-                }
-                else -> false
-            }
-        }
     }
 
     override fun afficherResultats(resultats: List<Chanson>) {

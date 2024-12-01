@@ -1,8 +1,12 @@
 package com.example.streamifymvp.Presentation.Lecture
 
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +21,8 @@ import com.example.streamifymvp.R
 import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
+import com.example.streamifymvp.MainActivity
+import com.example.streamifymvp.Presentation.Lecture.MiniPlayerFragment
 import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 
 class EcranLecture : Fragment(), IEcranLecture  {
@@ -82,12 +88,23 @@ class EcranLecture : Fragment(), IEcranLecture  {
         présentateur = LecturePresentateur(modele)
 
         val chansonId = arguments?.getInt("chansonId") ?: -1
-        chansonActuelle = chansonSourceBidon.obtenirToutesLesChansons().find { it.id == chansonId } ?: throw IllegalArgumentException("Chanson introuvable")
-        chansonsDuGenre = chansonSourceBidon.obtenirToutesLesChansons().filter { it.genre == chansonActuelle.genre }
-        currentSongIndex = chansonsDuGenre.indexOf(chansonActuelle)
+        if (chansonId != -1) {
+            chansonActuelle = chansonSourceBidon.obtenirToutesLesChansons().find { it.id == chansonId }
+                ?: run {
+                    Log.e("EcranLecture", "Chanson introuvable pour ID : $chansonId")
+                    Toast.makeText(requireContext(), "Erreur : Chanson introuvable", Toast.LENGTH_SHORT).show()
+                    return
+                }
 
-        setupListeners()
-        jouerChanson(chansonActuelle)
+            chansonsDuGenre = chansonSourceBidon.obtenirToutesLesChansons().filter { it.genre == chansonActuelle.genre }
+            currentSongIndex = chansonsDuGenre.indexOf(chansonActuelle)
+
+            setupListeners()
+            jouerChanson(chansonActuelle)
+        } else {
+            Log.e("EcranLecture", "ChansonId invalide : $chansonId")
+            Toast.makeText(requireContext(), "Erreur : ChansonId invalide", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun jouerChanson(chanson: Chanson) {
@@ -105,7 +122,8 @@ class EcranLecture : Fragment(), IEcranLecture  {
         mediaPlayer?.start()
 
         songTitle.text = chanson.nom
-        artistName.text = chansonSourceBidon.obtenirFavoris()?.nom ?: "Inconnu"
+        val artiste = chansonSourceBidon.obtenirArtisteParId(chanson.artisteId)
+        artistName.text = artiste?.pseudoArtiste ?: "Artiste Inconnu"
         imageAlbum.setImageResource(chanson.imageChanson)
 
         progressBar.max = (mediaPlayer?.duration ?: 0) / 1000
@@ -116,13 +134,13 @@ class EcranLecture : Fragment(), IEcranLecture  {
         handler.post(miseAJourBarreDeProgression)
     }
 
-     override fun jouerSuivante() {
+    override fun jouerSuivante() {
         currentSongIndex = (currentSongIndex + 1) % chansonsDuGenre.size
         chansonActuelle = chansonsDuGenre[currentSongIndex]
         jouerChanson(chansonActuelle)
     }
 
-     override fun setupListeners() {
+    override fun setupListeners() {
         btnPlaylist.setOnClickListener {
             afficherListeDeLecturePourAjout()
         }
@@ -175,8 +193,32 @@ class EcranLecture : Fragment(), IEcranLecture  {
             btnRepeat.setImageResource(if (isRepeatEnabled) R.drawable.repeat_active else R.drawable.repeat)
         }
         btnArrowDown.setOnClickListener {
-            Navigation.findNavController(requireView()).popBackStack()
+            val activity = requireActivity() as? MainActivity
+            if (activity != null && mediaPlayer != null) {
+                activity.ajouterMiniPlayerFragment(mediaPlayer!!, chansonActuelle)
+
+                // Rendre la barre de lecture visible
+                val miniPlayerContainer = activity.findViewById<FrameLayout>(R.id.miniPlayerContainer)
+                miniPlayerContainer.visibility = View.VISIBLE
+
+                // Mettre à jour la progress bar, le titre et l'artiste
+                val fragment = childFragmentManager.findFragmentById(R.id.miniPlayerContainer) as? MiniPlayerFragment
+                fragment?.apply {
+                    songTitle.text = chansonActuelle.nom
+                    albumArt.setImageResource(chansonActuelle.imageChanson)
+                    progressBar.progress = mediaPlayer!!.currentPosition
+                }
+
+                // Retourner à l'écran d'accueil
+                Navigation.findNavController(requireView()).popBackStack()
+            } else {
+                Log.d("EcranLecture", "Erreur: MainActivity ou mediaPlayer est null ou le media n'est pas prêt")
+                Toast.makeText(requireContext(), "Erreur lors de l'ajout du MiniPlayer", Toast.LENGTH_SHORT).show()
+            }
         }
+
+
+
 
         btnFavorite.setOnClickListener {
             présentateur.obtenirFavoris { favoris ->
@@ -192,7 +234,7 @@ class EcranLecture : Fragment(), IEcranLecture  {
         }
     }
 
-     override fun updateFavoriteButtonIcon() {
+    override fun updateFavoriteButtonIcon() {
         présentateur.obtenirFavoris { favoris ->
             val chansonDansFavoris = favoris?.chansons?.contains(chansonActuelle) == true
             btnFavorite.setImageResource(
@@ -201,7 +243,7 @@ class EcranLecture : Fragment(), IEcranLecture  {
         }
     }
 
-     override fun afficherListeDeLecturePourAjout() {
+    override fun afficherListeDeLecturePourAjout() {
         val playlists = chansonSourceBidon.obtenirToutesLesListesDeLecture()
         if (playlists.isEmpty()) {
             Toast.makeText(requireContext(), "Aucune playlist disponible.", Toast.LENGTH_SHORT).show()
@@ -222,7 +264,12 @@ class EcranLecture : Fragment(), IEcranLecture  {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mediaPlayer?.release()
-        handler.removeCallbacks(miseAJourBarreDeProgression)
+        // Ne libérez pas le MediaPlayer si on passe au MiniPlayerFragment
+        val activity = requireActivity() as? MainActivity
+        if (activity == null || !activity.isMiniPlayerActive()) {
+            mediaPlayer?.release()
+            handler.removeCallbacks(miseAJourBarreDeProgression)
+        }
     }
+
 }

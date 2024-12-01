@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_ecranLecture_to_ecranListeDeLecture"
             app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_ecranLecture_to_miniPlayerFragment"
+            app:destination="@id/miniPlayerFragment" />
     </fragment>
 
     <fragment
@@ -152,6 +155,14 @@
             app:destination="@id/ecranListeDeLecture" />
         <action
             android:id="@+id/action_fragmentEcranRecherche_to_ecranLecture"
+            app:destination="@id/ecranLecture" />
+    </fragment>
+    <fragment
+        android:id="@+id/miniPlayerFragment"
+        android:name="com.example.streamifymvp.Presentation.Lecture.MiniPlayerFragment"
+        android:label="MiniPlayerFragment" >
+        <action
+            android:id="@+id/action_miniPlayerFragment_to_ecranLecture"
             app:destination="@id/ecranLecture" />
     </fragment>
 

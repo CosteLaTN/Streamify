@@ -72,8 +72,6 @@ class SourceDeDonneeBidon : ISourceDeDonnee {
     }
 
 
-
-    //Section Artiste
     private val artistes = listOf(
         Artiste(
             id = 1,

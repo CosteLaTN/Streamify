@@ -53,35 +53,6 @@ class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
             afficherDialogCreationPlaylist()
         }
 
-        val bottomNavigationView: BottomNavigationView = view.findViewById(R.id.bottomNavigation)
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    Log.d("EcranAccueil", "Navigating to Home")
-                    navController.navigate(R.id.action_ecranListeDeLecture_to_ecranAccueil)
-                    true
-                }
-                R.id.nav_library -> {
-                    Log.d("EcranAccueil", "Navigating to Library")
-                    navController.navigate(R.id.action_ecranListeDeLecture_self)
-                    true
-                }
-                R.id.nav_search -> {
-                    Log.d("EcranAccueil", "Navigating to Search")
-                    navController.navigate(R.id.action_ecranListeDeLecture_to_fragmentEcranRecherche)
-                    true
-                }
-                R.id.nav_profile -> {
-                    Log.d("EcranAccueil", "Navigating to Profile")
-                    navController.navigate(R.id.action_ecranListeDeLecture_to_profilVue)
-                    true
-                }
-                else -> false
-            }
-        }
-
         rafraichirListeDeLecture()
     }
 

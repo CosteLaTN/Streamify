@@ -10,10 +10,7 @@ import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,9 +25,7 @@ import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.HistoriqueService
 import com.example.streamifymvp.Presentation.Accueil.Adapter.ChansonAdapter
 import com.example.streamifymvp.Presentation.Modele
-import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class EcranAccueil : Fragment(), AccueilVue {
 
@@ -59,19 +54,16 @@ class EcranAccueil : Fragment(), AccueilVue {
         recyclerViewNouveautes = view.findViewById(R.id.recyclerViewNouveautes)
         recyclerViewNouveauxArtistes = view.findViewById(R.id.recyclerViewNouveauxArtistes)
 
-
         val historiqueService = HistoriqueService(requireContext())
-
         val chansonService = ChansonService(SourceDeDonneeBidon.instance)
         val artisteService = ArtisteService(SourceDeDonneeBidon())
         val listeDeLectureService = ListeDeLectureService(SourceDeDonneeBidon.instance)
         val modèle = Modele(chansonService, artisteService, listeDeLectureService)
+
         présentateur = AccueilPresentateur(this, modèle)
-        lateinit var navController: NavController
 
         val chansonsLimite = modèle.obtenirToutesLesChansons().take(6)
         val artistes = modèle.obtenirTousLesArtistes()
-
 
         adaptateurChanson = ChansonAdapter(chansonsLimite, artistes) { chanson ->
             Log.d("EcranAccueil", "Chanson cliquée: ${chanson.nom} avec ID: ${chanson.id}")
@@ -86,51 +78,19 @@ class EcranAccueil : Fragment(), AccueilVue {
             }
             Navigation.findNavController(view).navigate(R.id.actionEcranAccueilToEcranLecture, bundle)
         }
+
         recyclerViewChansons.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerViewChansons.adapter = adaptateurChanson
+
         nouveauteAdapter = NouveauteAdapter(emptyList())
         recyclerViewNouveautes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerViewNouveautes.adapter = nouveauteAdapter
+
         artistesAdapter = NouveauxArtistesAdapter(emptyList())
         recyclerViewNouveauxArtistes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerViewNouveauxArtistes.adapter = artistesAdapter
+
         présentateur.chargerAccueil()
-        navController = findNavController()
-
-        val bottomNavigationView: BottomNavigationView = requireView().findViewById(R.id.bottomNavigation)
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    Log.d("EcranAccueil", "Navigating to Home")
-                    navController.navigate(R.id.ecranAccueil)
-                    true
-                }
-                R.id.nav_library -> {
-                    Log.d("EcranAccueil", "Navigating to Library")
-                    navController.navigate(R.id.action_ecranAccueil_to_ecranListeDeLecture)
-                    true
-                }
-                R.id.nav_library -> {
-                    Log.d("EcranAccueil", "Navigating to Library")
-                    navController.navigate(R.id.action_ecranAccueil_to_ecranListeDeLecture)
-                    true
-                }
-                R.id.nav_profile -> {
-                    Log.d("EcranAccueil", "Navigating to Profile")
-                    navController.navigate(R.id.action_ecranAccueil_to_profilVue)
-                    true
-                }
-                R.id.nav_search -> {
-                    Log.d("EcranAccueil", "Navigating to Search")
-                    navController.navigate(R.id.action_ecranAccueil_to_fragmentEcranRecherche)
-                    true
-                }
-
-                else -> false
-            }
-        }
     }
 
     override fun afficherChansons(chansons: List<Chanson>) {
