@@ -1,10 +1,10 @@
 package com.example.streamifymvp.SourceDeDonnees
 
-import Profil
 import com.example.streamifymvp.Domaine.entitees.Artiste
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Domaine.entitees.ShowDate
+import com.example.streamifymvp.Presentation.profil.Profil
 
 interface ISourceDeDonnee {
     fun obtenirProfil(): Profil?

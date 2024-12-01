@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_playlist_gradient"
-    tools:context="com.example.streamifymvp.presentation.Chansons.EcranChansonsLDL">
+    tools:context="com.example.streamifymvp.Presentation.EcranChansonsLDL.EcranChansonsLDL">
 
     <LinearLayout
         android:layout_width="match_parent"

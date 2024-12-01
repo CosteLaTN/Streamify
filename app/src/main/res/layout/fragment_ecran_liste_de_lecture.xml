@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E2D3EB"
-    tools:context="com.example.streamifymvp.presentation.ListeDeLecture.EcranListeDeLecture">
+    tools:context="com.example.streamifymvp.Presentation.ListeDeLecture.EcranListeDeLecture">
 
     <LinearLayout
         android:layout_width="match_parent"

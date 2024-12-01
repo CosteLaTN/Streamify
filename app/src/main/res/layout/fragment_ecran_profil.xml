@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DAD3E9"
-    tools:context=".présentation.profile.EcranProfil">
+    tools:context=".Presentation.profil.ProfilVue">
 
 
     <!-- Header Background -->
@@ -19,11 +19,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#000000"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="8dp"
+        tools:ignore="MissingConstraints">
 
         <ImageView
             android:id="@+id/imageView7"
@@ -117,6 +119,7 @@
 
     <!-- Divider Section -->
     <View
+        android:id="@+id/view"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="24dp"
@@ -210,40 +213,6 @@
         </LinearLayout>
 
         <!-- Changer la langue -->
-        <LinearLayout
-            android:id="@+id/btnChangerLangue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#4E4556"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:orientation="horizontal"
-
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Search History Icon"
-                android:src="@drawable/langue_icon" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:text="@string/language_change"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text=">"
-                android:textColor="#FFFFFF" />
-        </LinearLayout>
 
     </LinearLayout>
 

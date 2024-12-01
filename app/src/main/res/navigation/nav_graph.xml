@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_ecranAccueil_to_profilVue"
             app:destination="@id/profilVue" />
+        <action
+            android:id="@+id/action_ecranAccueil_to_fragmentEcranRecherche"
+            app:destination="@id/fragmentEcranRecherche" />
     </fragment>
 
     <fragment
@@ -37,7 +40,7 @@
 
     <fragment
         android:id="@+id/ecranListeDeLecture"
-        android:name="com.example.streamifymvp.presentation.ListeDeLecture.EcranListeDeLecture"
+        android:name="com.example.streamifymvp.Presentation.ListeDeLecture.EcranListeDeLecture"
         android:label="fragment_ecran_liste_de_lecture"
         tools:layout="@layout/fragment_ecran_liste_de_lecture">
         <action
@@ -53,12 +56,21 @@
         <action
             android:id="@+id/action_ecranListeDeLecture_to_profilVue"
             app:destination="@id/profilVue" />
+        <action
+            android:id="@+id/action_ecranListeDeLecture_to_fragmentEcranRecherche"
+            app:destination="@id/fragmentEcranRecherche" />
+        <action
+            android:id="@+id/action_ecranListeDeLecture_to_ecranAccueil"
+            app:destination="@id/ecranAccueil" />
+        <action
+            android:id="@+id/action_ecranListeDeLecture_self"
+            app:destination="@id/ecranListeDeLecture" />
     </fragment>
 
     <fragment
         android:id="@+id/ecranChansonsLDL"
-        android:name="com.example.streamifymvp.presentation.Chansons.EcranChansonsLDL"
-        android:label="EcranChansonsLDL" >
+        android:name="com.example.streamifymvp.Presentation.EcranChansonsLDL.EcranChansonsLDL"
+        android:label="EcranChansonsLDL">
         <action
             android:id="@+id/action_ecranChansonsLDL_to_ecranLecture"
             app:destination="@id/ecranLecture" />
@@ -68,11 +80,18 @@
         <action
             android:id="@+id/action_ecranChansonsLDL_to_ecranListeDeLecture"
             app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_ecranChansonsLDL_to_fragmentEcranRecherche"
+            app:destination="@id/fragmentEcranRecherche" />
+        <action
+            android:id="@+id/action_ecranChansonsLDL_to_ecranAccueil"
+            app:destination="@id/ecranAccueil" />
     </fragment>
     <fragment
         android:id="@+id/profilVue"
-        android:name="ProfilVue"
-        android:label="ProfilVue" >
+        android:name="com.example.streamifymvp.Presentation.profil.ProfilVue"
+        android:label="ProfilVue"
+        tools:layout="@layout/fragment_ecran_profil">
         <action
             android:id="@+id/action_profilVue_to_historiqueVue"
             app:destination="@id/historiqueVue" />
@@ -82,11 +101,20 @@
         <action
             android:id="@+id/action_profilVue_to_ecranListeDeLecture"
             app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_profilVue_to_fragmentEcranRecherche"
+            app:destination="@id/fragmentEcranRecherche" />
+        <action
+            android:id="@+id/action_profilVue_to_ecranAccueil"
+            app:destination="@id/ecranAccueil" />
+        <action
+            android:id="@+id/action_profilVue_self"
+            app:destination="@id/profilVue" />
     </fragment>
     <fragment
         android:id="@+id/historiqueVue"
-        android:name="HistoriqueVue"
-        android:label="HistoriqueVue" >
+        android:name="com.example.streamifymvp.Presentation.Historique.HistoriqueVue"
+        android:label="HistoriqueVue">
         <action
             android:id="@+id/action_historiqueVue_to_ecranListeDeLecture"
             app:destination="@id/ecranListeDeLecture" />
@@ -96,14 +124,35 @@
     </fragment>
     <fragment
         android:id="@+id/showDatesVue"
-        android:name="ShowDatesVue"
-        android:label="ShowDatesVue" >
+        android:name="com.example.streamifymvp.Presentation.showDates.ShowDatesVue"
+        android:label="ShowDatesVue">
         <action
             android:id="@+id/action_showDatesVue_to_ecranListeDeLecture"
             app:destination="@id/ecranListeDeLecture" />
         <action
             android:id="@+id/action_showDatesVue_to_profilVue"
             app:destination="@id/profilVue" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentEcranRecherche"
+        android:name="com.example.streamifymvp.Presentation.Recherche.FragmentEcranRecherche"
+        android:label="fragment_ecran_recherche"
+        tools:layout="@layout/fragment_ecran_recherche" >
+        <action
+            android:id="@+id/action_fragmentEcranRecherche_self"
+            app:destination="@id/fragmentEcranRecherche" />
+        <action
+            android:id="@+id/action_fragmentEcranRecherche_to_ecranAccueil"
+            app:destination="@id/ecranAccueil" />
+        <action
+            android:id="@+id/action_fragmentEcranRecherche_to_profilVue"
+            app:destination="@id/profilVue" />
+        <action
+            android:id="@+id/action_fragmentEcranRecherche_to_ecranListeDeLecture"
+            app:destination="@id/ecranListeDeLecture" />
+        <action
+            android:id="@+id/action_fragmentEcranRecherche_to_ecranLecture"
+            app:destination="@id/ecranLecture" />
     </fragment>
 
 </navigation>

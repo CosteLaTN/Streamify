@@ -1,14 +1,25 @@
+package com.example.streamifymvp.Presentation.profil
+
+
+import android.Manifest
 import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -20,9 +31,15 @@ import java.util.Locale
 
 class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
 
+    companion object {
+        private const val REQUEST_IMAGE_CAPTURE = 1
+        private const val REQUEST_CAMERA_PERMISSION = 2
+    }
+
     private lateinit var presentateur: ContratVuePrésentateurProfil.IProfilPrésentateur
     private lateinit var nameTextView: TextView
     private lateinit var usernameTextView: TextView
+    private lateinit var profileImageView: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,14 +48,11 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_ecran_profil, container, false)
 
-
         nameTextView = view.findViewById(R.id.name_profile)
         usernameTextView = view.findViewById(R.id.username_profile)
-
+        profileImageView = view.findViewById(R.id.profilepic_profile)
 
         val service = SourceDeDonneeBidon()
-
-
         presentateur = ProfilPrésentateur(this, service = service)
 
         return view
@@ -47,24 +61,24 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         presentateur.chargerProfil()
 
         lateinit var navController: NavController
-
         navController = findNavController()
 
+
+        profileImageView.setOnClickListener {
+            ouvrirCamera()
+        }
 
         view.findViewById<Button>(R.id.edit_profile_button_profile).setOnClickListener {
             afficherDialogueModificationNom()
         }
 
         view.findViewById<Button>(R.id.add_status_button_profile).setOnClickListener {
-
             val input = EditText(requireContext()).apply {
                 hint = "Chanson du jour!"
             }
-
 
             AlertDialog.Builder(requireContext())
                 .setTitle("Veuillez ajouter votre chanson du jour!")
@@ -72,7 +86,6 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
                 .setPositiveButton("Sauvegarder") { _, _ ->
                     val songOfTheDay = input.text.toString()
                     if (songOfTheDay.isNotBlank()) {
-
                         presentateur.sauvegarderChansonDuJour(songOfTheDay)
                     } else {
                         afficherMessageErreur("La chanson du jour ne peut pas être vide.")
@@ -83,22 +96,13 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
                 .show()
         }
 
-
-        view.findViewById<LinearLayout>(R.id.btnChangerLangue).setOnClickListener {
-            presentateur.gererChangementLangue()
-        }
-
         val boutonHistorique: LinearLayout = view.findViewById(R.id.btnHistoriqueProfil)
-
         boutonHistorique.setOnClickListener {
-            val navController = findNavController()
             navController.navigate(R.id.action_profilVue_to_historiqueVue)
         }
 
         val boutonRappel: LinearLayout = view.findViewById(R.id.btnRappel_profile)
-
         boutonRappel.setOnClickListener {
-            val navController = findNavController()
             navController.navigate(R.id.action_profilVue_to_showDatesVue)
         }
 
@@ -109,7 +113,7 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     Log.d("EcranAccueil", "Navigating to Home")
-                    navController.navigate(R.id.ecranAccueil)
+                    navController.navigate(R.id.action_profilVue_to_ecranAccueil)
                     true
                 }
                 R.id.nav_library -> {
@@ -117,12 +121,54 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
                     navController.navigate(R.id.action_profilVue_to_ecranListeDeLecture)
                     true
                 }
+                R.id.nav_search -> {
+                    Log.d("EcranAccueil", "Navigating to Search")
+                    navController.navigate(R.id.action_profilVue_to_fragmentEcranRecherche)
+                    true
+                }
                 R.id.nav_profile -> {
                     Log.d("EcranAccueil", "Navigating to Profile")
+                    navController.navigate(R.id.action_profilVue_self)
                     true
                 }
                 else -> false
             }
+        }
+    }
+
+    private fun ouvrirCamera() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        } else {
+            lancerCamera()
+        }
+    }
+
+    private fun lancerCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+        } else {
+            afficherMessageErreur("Impossible d'ouvrir la caméra.")
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                lancerCamera()
+            } else {
+                afficherMessageErreur("Permission caméra refusée.")
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            profileImageView.setImageBitmap(imageBitmap)
         }
     }
 

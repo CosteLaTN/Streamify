@@ -1,4 +1,4 @@
-package com.example.streamifymvp.presentation.ListeDeLecture
+package com.example.streamifymvp.Presentation.ListeDeLecture
 
 import android.os.Bundle
 import android.util.Log
@@ -60,11 +60,17 @@ class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     Log.d("EcranAccueil", "Navigating to Home")
-                    navController.navigate(R.id.ecranAccueil)
+                    navController.navigate(R.id.action_ecranListeDeLecture_to_ecranAccueil)
                     true
                 }
                 R.id.nav_library -> {
                     Log.d("EcranAccueil", "Navigating to Library")
+                    navController.navigate(R.id.action_ecranListeDeLecture_self)
+                    true
+                }
+                R.id.nav_search -> {
+                    Log.d("EcranAccueil", "Navigating to Search")
+                    navController.navigate(R.id.action_ecranListeDeLecture_to_fragmentEcranRecherche)
                     true
                 }
                 R.id.nav_profile -> {

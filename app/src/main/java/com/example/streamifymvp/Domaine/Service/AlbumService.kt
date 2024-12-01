@@ -1,4 +1,4 @@
-/*package com.example.streamifymvp.SourceDeDonnees
+/*package com.example.streamifymvp.Domaine.Service
 
 import com.example.streamifymvp.Domaine.entitees.Album
 import com.example.streamifymvp.Domaine.entitees.Chanson

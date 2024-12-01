@@ -1,4 +1,4 @@
-package com.example.streamifymvp.presentation.Chansons
+package com.example.streamifymvp.Presentation.EcranChansonsLDL
 
 import android.os.Bundle
 import android.util.Log
@@ -83,12 +83,17 @@ class EcranChansonsLDL : Fragment() {
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     Log.d("EcranChansonsLDL", "Navigating to Home")
-                    navController.navigate(R.id.ecranAccueil)
+                    navController.navigate(R.id.action_ecranChansonsLDL_to_ecranAccueil)
                     true
                 }
                 R.id.nav_library -> {
                     Log.d("EcranChansonsLDL", "Navigating to Library")
                     navController.navigate(R.id.action_ecranChansonsLDL_to_ecranListeDeLecture)
+                    true
+                }
+                R.id.nav_search -> {
+                    Log.d("EcranAccueil", "Navigating to Search")
+                    navController.navigate(R.id.action_ecranAccueil_to_fragmentEcranRecherche)
                     true
                 }
                 R.id.nav_profile -> {

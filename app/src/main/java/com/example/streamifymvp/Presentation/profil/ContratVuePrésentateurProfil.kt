@@ -1,3 +1,4 @@
+package com.example.streamifymvp.Presentation.profil
 interface ContratVuePrésentateurProfil {
 
     interface IProfilVue {

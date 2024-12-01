@@ -1,3 +1,4 @@
+package com.example.streamifymvp.Presentation.profil
 import android.util.Log
 import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import kotlinx.coroutines.CoroutineDispatcher

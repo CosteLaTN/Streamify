@@ -37,12 +37,6 @@
                 android:orientation="horizontal"
                 app:menu="@menu/menu">
 
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/searchView"
-                    android:layout_width="300dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/background_rounded" />
             </LinearLayout>
 
         </LinearLayout>
@@ -162,8 +156,8 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="42dp"
+            android:layout_gravity="bottom"
             android:layout_weight="1"
             android:background="@drawable/bottom_navigation_gradient"
             app:menu="@menu/menu" />

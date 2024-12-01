@@ -1,3 +1,4 @@
+package com.example.streamifymvp.Presentation.Accueil.Adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View

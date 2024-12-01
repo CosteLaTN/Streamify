@@ -1,3 +1,4 @@
+package com.example.streamifymvp.Presentation.Historique
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -54,6 +55,11 @@ class HistoriqueVue : Fragment(), ContratVuePrésentateurHistorique.IHistoriqueV
                 R.id.nav_library -> {
                     Log.d("HistoriqueVue", "Navigating to Library")
                     navController.navigate(R.id.action_historiqueVue_to_ecranListeDeLecture)
+                    true
+                }
+                R.id.nav_search -> {
+                    Log.d("EcranAccueil", "Navigating to Search")
+                    navController.navigate(R.id.action_ecranAccueil_to_fragmentEcranRecherche)
                     true
                 }
                 R.id.nav_profile -> {

@@ -1,6 +1,5 @@
 package com.example.streamify.Presentation.Accueil
 
-import ChansonAdapter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -27,6 +26,7 @@ import com.example.streamifymvp.Presentation.Accueil.Adapter.NouveauxArtistesAda
 import com.example.streamifymvp.R
 import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.HistoriqueService
+import com.example.streamifymvp.Presentation.Accueil.Adapter.ChansonAdapter
 import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
@@ -58,7 +58,7 @@ class EcranAccueil : Fragment(), AccueilVue {
         recyclerViewChansons = view.findViewById(R.id.recyclerViewChansons)
         recyclerViewNouveautes = view.findViewById(R.id.recyclerViewNouveautes)
         recyclerViewNouveauxArtistes = view.findViewById(R.id.recyclerViewNouveauxArtistes)
-        searchView = view.findViewById(R.id.searchView)
+
 
         val historiqueService = HistoriqueService(requireContext())
 
@@ -88,31 +88,13 @@ class EcranAccueil : Fragment(), AccueilVue {
         }
         recyclerViewChansons.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerViewChansons.adapter = adaptateurChanson
-
         nouveauteAdapter = NouveauteAdapter(emptyList())
         recyclerViewNouveautes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerViewNouveautes.adapter = nouveauteAdapter
-
         artistesAdapter = NouveauxArtistesAdapter(emptyList())
         recyclerViewNouveauxArtistes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerViewNouveauxArtistes.adapter = artistesAdapter
-
         présentateur.chargerAccueil()
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String?): Boolean {
-                présentateur.rechercherChansons(newText ?: "")
-                return true
-            }
-
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (!query.isNullOrEmpty()) {
-                    historiqueService.ajouterRecherche(query)
-                }
-                return false
-            }
-        })
-
         navController = findNavController()
 
         val bottomNavigationView: BottomNavigationView = requireView().findViewById(R.id.bottomNavigation)
@@ -132,7 +114,7 @@ class EcranAccueil : Fragment(), AccueilVue {
                 }
                 R.id.nav_library -> {
                     Log.d("EcranAccueil", "Navigating to Library")
-                    navController.navigate(R.id.ecranListeDeLecture)
+                    navController.navigate(R.id.action_ecranAccueil_to_ecranListeDeLecture)
                     true
                 }
                 R.id.nav_profile -> {
@@ -140,11 +122,12 @@ class EcranAccueil : Fragment(), AccueilVue {
                     navController.navigate(R.id.action_ecranAccueil_to_profilVue)
                     true
                 }
-                R.id.nav_profile -> {
-                    Log.d("EcranAccueil", "Navigating to Profile")
-                    navController.navigate(R.id.profilVue)
+                R.id.nav_search -> {
+                    Log.d("EcranAccueil", "Navigating to Search")
+                    navController.navigate(R.id.action_ecranAccueil_to_fragmentEcranRecherche)
                     true
                 }
+
                 else -> false
             }
         }
