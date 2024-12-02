@@ -75,6 +75,9 @@ class EcranLecture : Fragment(), IEcranLecture {
         imageAlbum = view.findViewById(R.id.imageAlbum)
 
         val chansonId = arguments?.getInt("chansonId") ?: -1
+        val isPlaying = arguments?.getBoolean("isPlaying", false) ?: false
+        val currentPosition = arguments?.getInt("currentPosition", 0) ?: 0
+
         if (chansonId == -1) {
             Toast.makeText(requireContext(), "Erreur : Chanson introuvable", Toast.LENGTH_SHORT).show()
             return
@@ -87,11 +90,24 @@ class EcranLecture : Fragment(), IEcranLecture {
             currentSongIndex = chansonsDuGenre.indexOf(chansonActuelle)
 
             withContext(Dispatchers.Main) {
+                if (mediaPlayer == null) {
+                    mediaPlayer = MediaPlayer().apply {
+                        setDataSource(chansonActuelle.fichierAudio)
+                        prepare()
+                        seekTo(currentPosition)
+                        if (isPlaying) start()
+                    }
+                } else {
+                    mediaPlayer?.seekTo(currentPosition)
+                    if (isPlaying) mediaPlayer?.start()
+                }
+
                 jouerChanson(chansonActuelle)
                 setupListeners()
             }
         }
     }
+
 
     override fun jouerChanson(chanson: Chanson) {
         mediaPlayer?.release()
@@ -118,7 +134,7 @@ class EcranLecture : Fragment(), IEcranLecture {
         }
         Glide.with(requireContext())
             .load(chanson.imageChanson) // Charger l'image depuis l'URL
-            .placeholder(R.drawable.placeholder_image)
+
             .into(imageAlbum)
 
         progressBar.max = (mediaPlayer?.duration ?: 0) / 1000
@@ -171,30 +187,74 @@ class EcranLecture : Fragment(), IEcranLecture {
             val activity = requireActivity() as? MainActivity
             if (activity != null && mediaPlayer != null) {
                 activity.ajouterMiniPlayerFragment(mediaPlayer!!, chansonActuelle)
+                // Ne pas libérer le MediaPlayer ici, car il est utilisé par le MiniPlayer.
                 Navigation.findNavController(requireView()).popBackStack()
             } else {
                 Log.e("EcranLecture", "Erreur: MiniPlayer ou mediaPlayer est null")
             }
         }
 
+
+
         btnPlaylist.setOnClickListener { afficherListeDeLecturePourAjout() }
 
         btnFavorite.setOnClickListener {
             lifecycleScope.launch {
-                présentateur.ajouterAuxFavoris(chansonActuelle)
-                updateFavoriteButtonIcon()
-                Toast.makeText(requireContext(), "Ajoutée aux favoris.", Toast.LENGTH_SHORT).show()
+                try {
+                    val favoris = présentateur.obtenirFavorisSuspendu()
+                    val isAlreadyFavorite = favoris?.chansons?.contains(chansonActuelle) == true
+
+                    if (isAlreadyFavorite) {
+                        Toast.makeText(requireContext(), "Cette chanson est déjà dans les favoris.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        présentateur.ajouterAuxFavoris(chansonActuelle)
+
+                        // Force une nouvelle récupération des favoris après ajout
+                        val updatedFavoris = présentateur.obtenirFavorisSuspendu()
+                        val isFavorite = updatedFavoris?.chansons?.contains(chansonActuelle) == true
+
+                        // Mise à jour de l'icône
+                        withContext(Dispatchers.Main) {
+                            btnFavorite.setImageResource(
+                                if (isFavorite) R.drawable.favorited else R.drawable.favorite
+                            )
+                        }
+
+                        Toast.makeText(requireContext(), "Ajoutée aux favoris.", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Log.e("EcranLecture", "Erreur lors de l'ajout aux favoris : ${e.message}")
+                    Toast.makeText(requireContext(), "Une erreur est survenue.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+
+
+
+
+
+
+    }
+
+    override fun updateFavoriteButtonIcon() {
+        lifecycleScope.launch {
+            try {
+                val favoris = présentateur.obtenirFavorisSuspendu()
+                withContext(Dispatchers.Main) {
+                    val isFavorite = favoris?.chansons?.contains(chansonActuelle) == true
+                    Log.d("EcranLecture", "Mise à jour de l'icône des favoris. Est favori : $isFavorite")
+                    btnFavorite.setImageResource(
+                        if (isFavorite) R.drawable.favorited else R.drawable.favorite
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("EcranLecture", "Erreur lors de la mise à jour du bouton Favoris : ${e.message}")
             }
         }
     }
 
-    override fun updateFavoriteButtonIcon() {
-        présentateur.obtenirFavoris { favoris ->
-            btnFavorite.setImageResource(
-                if (favoris?.chansons?.contains(chansonActuelle) == true) R.drawable.favorited else R.drawable.favorite
-            )
-        }
-    }
+
 
     override fun afficherListeDeLecturePourAjout() {
         lifecycleScope.launch {
@@ -223,7 +283,10 @@ class EcranLecture : Fragment(), IEcranLecture {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mediaPlayer?.release()
+        if (!(requireActivity() as MainActivity).isMiniPlayerActive()) {
+            mediaPlayer?.release()
+        }
         handler.removeCallbacks(miseAJourBarreDeProgression)
     }
+
 }

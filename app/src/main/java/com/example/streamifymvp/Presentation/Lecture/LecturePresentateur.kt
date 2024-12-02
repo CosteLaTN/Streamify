@@ -1,5 +1,6 @@
 package com.example.streamifymvp.Presentation.Lecture
 
+import android.util.Log
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Presentation.Modele
@@ -54,4 +55,13 @@ class LecturePresentateur(
             modele.ajouterChansonAPlaylist(playlistId, chanson)
         }
     }
+    suspend fun obtenirFavorisSuspendu(): ListeDeLecture? {
+        return try {
+            modele.obtenirFavoris()
+        } catch (e: Exception) {
+            Log.e("LecturePresentateur", "Erreur lors de l'obtention des favoris : ${e.message}")
+            null
+        }
+    }
+
 }

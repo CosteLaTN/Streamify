@@ -68,7 +68,22 @@ class EcranAccueil : Fragment(), AccueilVue {
         recyclerViewChansons.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerViewChansons.adapter = adaptateurChanson
 
-        nouveauteAdapter = NouveauteAdapter(emptyList())
+        nouveauteAdapter = NouveauteAdapter(
+            chansons = emptyList(),
+            artistes = emptyList()
+        ) { chanson ->
+            Log.d("EcranAccueil", "Nouveauté cliquée : ${chanson.nom} avec ID : ${chanson.id}")
+            val bundle = Bundle().apply {
+                putInt("chansonId", chanson.id)
+                putString("chansonNom", chanson.nom)
+                putString("chansonArtiste", "Artiste inconnu") // Mise à jour lors du chargement des artistes
+                putInt("artisteId", chanson.artisteId)
+                putString("chansonImage", chanson.imageChanson)
+                putString("chansonFichier", chanson.fichierAudio)
+            }
+            Navigation.findNavController(view).navigate(R.id.actionEcranAccueilToEcranLecture, bundle)
+        }
+
         recyclerViewNouveautes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerViewNouveautes.adapter = nouveauteAdapter
 
@@ -86,6 +101,7 @@ class EcranAccueil : Fragment(), AccueilVue {
                 artistesAdapter.updateArtistes(artistes)
 
                 val nouveautés = modèle.obtenirNouveautés()
+                Log.d("EcranAccueil", "Nouveautés obtenues : $nouveautés")
                 nouveauteAdapter.updateChansons(nouveautés)
             } catch (e: Exception) {
                 Log.e("EcranAccueil", "Erreur lors du chargement des données : ${e.message}")

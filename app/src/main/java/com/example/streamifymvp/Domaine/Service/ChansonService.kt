@@ -15,7 +15,7 @@ class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.i
 
     suspend fun obtenirNouveautés(): List<Chanson> {
 
-        val limite = "2018-11-17"
+        val limite = "2000-11-17"
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dateLimite = dateFormat.parse(limite)
 

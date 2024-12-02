@@ -95,7 +95,6 @@ class MiniPlayerFragment(
                     mediaPlayer.start()
                     playPauseButton.setImageResource(R.drawable.pause)
                 }
-                isPlaying = mediaPlayer.isPlaying
             } catch (e: IllegalStateException) {
                 Log.e("MiniPlayerFragment", "Erreur d'état du MediaPlayer : ${e.message}")
             }
@@ -105,12 +104,13 @@ class MiniPlayerFragment(
             try {
                 val navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
 
-                val bundle = Bundle()
-                bundle.putInt("chansonId", chansonActuelle.id)
-                bundle.putBoolean("isPlaying", isPlaying)
+                val bundle = Bundle().apply {
+                    putInt("chansonId", chansonActuelle.id)
+                    putBoolean("isPlaying", mediaPlayer?.isPlaying == true)
+                    putInt("currentPosition", mediaPlayer?.currentPosition ?: 0)
+                }
 
-                navController.navigate(navigationAction, bundle)
-
+                navController.navigate(R.id.ecranLecture, bundle)
                 val miniPlayerContainer = requireActivity().findViewById<FrameLayout>(R.id.miniPlayerContainer)
                 miniPlayerContainer.visibility = View.GONE
             } catch (e: IllegalStateException) {
@@ -119,6 +119,7 @@ class MiniPlayerFragment(
             }
         }
     }
+
 
     private fun afficherErreur(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

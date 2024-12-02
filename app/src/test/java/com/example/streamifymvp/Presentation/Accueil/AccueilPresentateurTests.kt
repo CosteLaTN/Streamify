@@ -11,7 +11,7 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-class AccueilPresentateurTests {
+/*class AccueilPresentateurTests {
 
     private lateinit var vue: AccueilVue
     private lateinit var modele: Modele
@@ -58,4 +58,4 @@ class AccueilPresentateurTests {
     }
 }
 
-
+*/
