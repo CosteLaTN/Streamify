@@ -5,15 +5,15 @@ import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 
 class ArtisteService(private val source: ISourceDeDonnee) {
 
-    fun obtenirTousLesArtistes(): List<Artiste> {
+    suspend fun obtenirTousLesArtistes(): List<Artiste> {
         return source.obtenirTousLesArtistes()
     }
 
-    fun obtenirArtisteParId(id: Int): Artiste? {
+    suspend fun obtenirArtisteParId(id: Int): Artiste? {
         return source.obtenirArtisteParId(id)
     }
 
-    fun rechercherArtistes(recherche: String): List<Artiste> {
+    suspend fun rechercherArtistes(recherche: String): List<Artiste> {
         return source.rechercherArtistes(recherche)
     }
 }

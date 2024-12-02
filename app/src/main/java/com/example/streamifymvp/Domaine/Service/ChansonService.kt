@@ -9,11 +9,11 @@ import java.util.Locale
 
 class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.instance) {
 
-    fun obtenirToutesLesChansons(): List<Chanson> {
+    suspend fun obtenirToutesLesChansons(): List<Chanson> {
         return source.obtenirToutesLesChansons()
     }
 
-    fun obtenirNouveautés(): List<Chanson> {
+    suspend fun obtenirNouveautés(): List<Chanson> {
 
         val limite = "2018-11-17"
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -31,7 +31,7 @@ class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.i
     }
 
 
-    fun rechercherChansons(recherche: String): List<Chanson> {
+    suspend fun rechercherChansons(recherche: String): List<Chanson> {
         val rechercheMinuscule = recherche.lowercase()
         return source.obtenirToutesLesChansons().filter {
             it.nom.lowercase().contains(rechercheMinuscule) || it.genre.lowercase().contains(rechercheMinuscule)
@@ -39,7 +39,7 @@ class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.i
     }
 
 
-    fun ajouterAuxFavoris(chanson: Chanson) {
+    suspend fun ajouterAuxFavoris(chanson: Chanson) {
         source.ajouterAuxFavoris(chanson)
     }
 

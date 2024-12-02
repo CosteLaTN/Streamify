@@ -1,64 +1,72 @@
 package com.example.streamifymvp.Presentation.profil
-import android.util.Log
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
+import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
+import kotlinx.coroutines.*
 import java.util.Locale
-import kotlin.coroutines.CoroutineContext
 
 class ProfilPrésentateur(
     private val vue: ContratVuePrésentateurProfil.IProfilVue,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val service: SourceDeDonneeBidon
-) : ContratVuePrésentateurProfil.IProfilPrésentateur, CoroutineScope {
+    private val service: ISourceDeDonnee,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : ContratVuePrésentateurProfil.IProfilPrésentateur {
 
-    private val job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = dispatcher + job
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun chargerProfil() {
-        launch {
+        scope.launch {
             try {
-                val profil = withContext(Dispatchers.IO) { service.obtenirProfil() }
+                val profil = withContext(ioDispatcher) { service.obtenirProfil() }
                 if (profil != null) {
                     vue.afficherNomUtilisateur(profil.nom)
                     vue.afficherUsername(profil.username)
                 } else {
-                    vue.afficherMessageErreur("Erreur lors du chargement du profil")
+                    vue.afficherMessageErreur("Erreur lors du chargement du profil.")
                 }
             } catch (e: Exception) {
-                vue.afficherMessageErreur("Erreur lors du chargement du profil")
+                vue.afficherMessageErreur("Erreur lors du chargement du profil.")
             }
         }
     }
 
     override fun modifierNomUtilisateur(nouveauNom: String) {
         if (nouveauNom.isBlank()) {
-            vue.afficherMessageErreur("Le nom ne peut pas être vide")
+            vue.afficherMessageErreur("Le nom ne peut pas être vide.")
             return
         }
-        val succes = service.modifierNomUtilisateur(nouveauNom)
-        if (succes) {
-            vue.afficherNomUtilisateur(nouveauNom)
-        } else {
-            vue.afficherMessageErreur("Erreur lors de la modification du nom")
+
+        scope.launch {
+            try {
+                val succes = withContext(ioDispatcher) { service.modifierNomUtilisateur(nouveauNom) }
+                if (succes) {
+                    vue.afficherNomUtilisateur(nouveauNom)
+                    vue.afficherMessageSucces("Nom modifié avec succès.")
+                } else {
+                    vue.afficherMessageErreur("Erreur lors de la modification du nom.")
+                }
+            } catch (e: Exception) {
+                vue.afficherMessageErreur("Erreur lors de la modification du nom.")
+            }
         }
     }
 
     override fun modifierUsername(nouveauUsername: String) {
         if (nouveauUsername.isBlank()) {
-            vue.afficherMessageErreur("Le nom d'utilisateur ne peut pas être vide")
+            vue.afficherMessageErreur("Le nom d'utilisateur ne peut pas être vide.")
             return
         }
-        val succes = service.modifierUsername(nouveauUsername)
-        if (succes) {
-            vue.afficherUsername(nouveauUsername)
-        } else {
-            vue.afficherMessageErreur("Erreur lors de la modification du nom d'utilisateur")
+
+        scope.launch {
+            try {
+                val succes = withContext(ioDispatcher) { service.modifierUsername(nouveauUsername) }
+                if (succes) {
+                    vue.afficherUsername(nouveauUsername)
+                    vue.afficherMessageSucces("Nom d'utilisateur modifié avec succès.")
+                } else {
+                    vue.afficherMessageErreur("Erreur lors de la modification du nom d'utilisateur.")
+                }
+            } catch (e: Exception) {
+                vue.afficherMessageErreur("Erreur lors de la modification du nom d'utilisateur.")
+            }
         }
     }
 
@@ -66,48 +74,25 @@ class ProfilPrésentateur(
         if (chanson.isBlank()) {
             vue.afficherMessageErreur("La chanson du jour ne peut pas être vide.")
         } else {
-            Log.d("ProfilPrésentateur", "Chanson du jour : $chanson")
             vue.afficherMessageSucces("Chanson du jour sauvegardée : $chanson")
         }
     }
 
     override fun gererChangementLangue() {
         val currentLanguage = Locale.getDefault().language
-        if (currentLanguage == "fr") {
-            vue.changerLangue("en")
-        } else {
-            vue.changerLangue("fr")
-        }
+        val newLanguage = if (currentLanguage == "fr") "en" else "fr"
+        vue.changerLangue(newLanguage)
     }
 
     override fun gererModificationNomUtilisateur(nouveauNom: String) {
-        if (nouveauNom.isBlank()) {
-            vue.afficherMessageErreur("Le nom ne peut pas être vide")
-        } else {
-            val succes = service.modifierNomUtilisateur(nouveauNom)
-            if (succes) {
-                vue.afficherNomUtilisateur(nouveauNom)
-                vue.afficherDialogueModificationUsername()
-            } else {
-                vue.afficherMessageErreur("Erreur lors de la modification du nom")
-            }
-        }
+        modifierNomUtilisateur(nouveauNom)
     }
 
     override fun gererModificationUsername(nouveauUsername: String) {
-        if (nouveauUsername.isBlank()) {
-            vue.afficherMessageErreur("Le nom d'utilisateur ne peut pas être vide")
-        } else {
-            val succes = service.modifierUsername(nouveauUsername)
-            if (succes) {
-                vue.afficherUsername(nouveauUsername)
-            } else {
-                vue.afficherMessageErreur("Erreur lors de la modification du nom d'utilisateur")
-            }
-        }
+        modifierUsername(nouveauUsername)
     }
 
     fun onDestroy() {
-        job.cancel()
+        scope.cancel()
     }
 }

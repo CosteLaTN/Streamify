@@ -41,8 +41,8 @@ class ModeleTests {
                 genre = "Rock",
                 dureeAlbum = "45:00",
                 dureeMusique = "4:44",
-                imageChanson = 0,
-                fichierAudio = 0,
+                imageChanson = "",
+                fichierAudio = "",
                 albumId = 1,
                 artisteId = 1
             )
@@ -233,7 +233,7 @@ class ModeleTests {
                 prenom = "will.i.am",
                 nom = "",
                 pseudoArtiste = "The Black Eyed Peas",
-                imageArtiste = R.drawable.humps
+                imageArtiste = R.drawable.placeholder_image
             )
         )
         every { mockArtisteService.obtenirTousLesArtistes() } returns artistes

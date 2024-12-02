@@ -6,32 +6,35 @@ import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 
 class ListeDeLectureService(private val chansonSource: ISourceDeDonnee) {
 
-    fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture> {
+    suspend fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture> {
         return chansonSource.obtenirToutesLesListesDeLecture()
     }
 
-    fun obtenirListeDeLectureParId(playlistId: Int): ListeDeLecture? {
+    suspend fun obtenirListeDeLectureParId(playlistId: Int): ListeDeLecture? {
         return chansonSource.obtenirListeDeLectureParId(playlistId)
     }
 
-    fun obtenirListeDeLectureParNom(nom: String): ListeDeLecture? {
+    suspend fun obtenirListeDeLectureParNom(nom: String): ListeDeLecture? {
         val listesDeLecture = chansonSource.obtenirToutesLesListesDeLecture()
         return listesDeLecture.find { it.nom == nom }
     }
 
-    fun obtenirChansonsDeLaListeDeLecture(playlistId: Int): List<Chanson> {
+    suspend fun obtenirChansonsDeLaListeDeLecture(playlistId: Int): List<Chanson> {
         val playlist = chansonSource.obtenirListeDeLectureParId(playlistId)
         return playlist?.chansons ?: emptyList()
     }
 
-   // fun ajouterChansonAPlaylist(playlistId: Int, chanson: Chanson) {
-   //     val playlist = chansonSource.obtenirListeDeLectureParId(playlistId)
-   //     playlist?.let {
-   //         if (!it.chansons.contains(chanson)) {
-    //            it.chansons.add(chanson)
-    //        }
-    //    }
-   // }
+   suspend fun ajouterChansonAPlaylist(playlistId: Int, chanson: Chanson) {
+       val playlist = chansonSource.obtenirListeDeLectureParId(playlistId)
+       playlist?.let {
+            if (!it.chansons.contains(chanson)) {
+                it.chansons.add(chanson)
+            }
+       }
+   }
+    suspend fun ajouterPlaylist(playlist: ListeDeLecture) {
+        chansonSource.ajouterPlaylist(playlist)
+    }
 
 
 

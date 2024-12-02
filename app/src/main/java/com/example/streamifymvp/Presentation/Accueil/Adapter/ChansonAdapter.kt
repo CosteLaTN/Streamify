@@ -1,4 +1,5 @@
 package com.example.streamifymvp.Presentation.Accueil.Adapter
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.streamifymvp.Domaine.entitees.Artiste
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.R
@@ -36,11 +38,14 @@ class ChansonAdapter(
             Log.d("ChansonAdapter", "Artiste trouvé: ${artiste.pseudoArtiste} pour chanson: ${chanson.nom}")
         }
 
-
-
         holder.titreView.text = chanson.nom
         holder.artisteText.text = artiste?.pseudoArtiste ?: "Artiste inconnu"
-        holder.imageView.setImageResource(chanson.imageChanson)
+
+        // Utilisation de Glide pour charger l'image depuis l'API
+        Glide.with(holder.itemView.context)
+            .load(chanson.imageChanson)
+            //.placeholder(R.drawable.placeholder_image) // Image par défaut
+            .into(holder.imageView)
 
         holder.itemView.setOnClickListener {
             onChansonClick(chanson)

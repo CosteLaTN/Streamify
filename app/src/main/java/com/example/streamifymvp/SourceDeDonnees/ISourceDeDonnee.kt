@@ -1,10 +1,6 @@
 package com.example.streamifymvp.SourceDeDonnees
 
-import com.example.streamifymvp.Domaine.entitees.Artiste
-import com.example.streamifymvp.Domaine.entitees.Chanson
-import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
-import com.example.streamifymvp.Domaine.entitees.ShowDate
-import com.example.streamifymvp.Presentation.profil.Profil
+import com.example.streamifymvp.Domaine.entitees.*
 
 interface ISourceDeDonnee {
     fun obtenirProfil(): Profil?
@@ -12,24 +8,20 @@ interface ISourceDeDonnee {
     fun modifierUsername(nouveauUsername: String): Boolean
     fun obtenirHistoriqueRecherche(): List<String>
     fun obtenirToutesLesDatesDeShow(): List<ShowDate>
-    fun obtenirTousLesArtistes(): List<Artiste>
-    fun obtenirArtisteParId(id: Int): Artiste?
-    fun rechercherArtistes(recherche: String): List<Artiste>
-    fun obtenirToutesLesChansons(): List<Chanson>
 
-    fun obtenirPlaylist(nom: String): ListeDeLecture?
+    // Ajoutez `suspend` pour les méthodes réseau
+    suspend fun obtenirTousLesArtistes(): List<Artiste>
+    suspend fun obtenirArtisteParId(id: Int): Artiste?
+    suspend fun rechercherArtistes(recherche: String): List<Artiste>
+    suspend fun obtenirToutesLesChansons(): List<Chanson>
+    suspend fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture>
+    suspend fun obtenirListeDeLectureParId(id: Int): ListeDeLecture?
+    suspend fun ajouterPlaylist(playlist: ListeDeLecture)
+    suspend fun ajouterChansonALaPlaylist(playlistId: Int, chanson: Chanson)
 
-    fun ajouterChansonALaPlaylist(nomPlaylist: String, chanson: Chanson)
-
-    fun obtenirFavoris(): ListeDeLecture?
-
-    fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture>
-
-    fun obtenirListeDeLectureParId(id: Int): ListeDeLecture?
-
-    fun ajouterAuxFavoris(chanson: Chanson)
-
-    fun ajouterPlaylist(playlist: ListeDeLecture)
-
-    fun ajouterChansonALaPlaylist(playlistId: Int, chanson: Chanson)
+    // Méthodes locales
+     suspend fun obtenirPlaylist(nom: String): ListeDeLecture?
+    suspend fun ajouterChansonALaPlaylist(nomPlaylist: String, chanson: Chanson)
+    suspend fun obtenirFavoris(): ListeDeLecture?
+    suspend fun ajouterAuxFavoris(chanson: Chanson)
 }

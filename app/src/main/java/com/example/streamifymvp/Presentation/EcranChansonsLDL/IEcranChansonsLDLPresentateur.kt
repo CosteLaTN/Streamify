@@ -5,9 +5,9 @@ import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 
 interface IEcranChansonsLDLPresentateur {
 
-    fun obtenirChansonsDeLaListeDeLecture(playlistId: Int): List<Chanson>
+    suspend fun obtenirChansonsDeLaListeDeLecture(playlistId: Int): List<Chanson>
 
-    fun obtenirDetailsListeDeLecture(playlistId: Int): ListeDeLecture?
+    suspend fun obtenirDetailsListeDeLecture(playlistId: Int): ListeDeLecture?
 
-    fun obtenirPseudoArtiste(artisteId: Int): String
+    suspend fun obtenirPseudoArtiste(artisteId: Int): String
 }

@@ -1,4 +1,5 @@
 package com.example.streamifymvp.Presentation.Historique
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,16 +12,17 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
-import com.example.streamifymvp.Domaine.Service.HistoriqueService
 import com.example.streamifymvp.R
+import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeHTTP
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
 
 class HistoriqueVue : Fragment(), ContratVuePrésentateurHistorique.IHistoriqueVue {
 
     private lateinit var presentateur: ContratVuePrésentateurHistorique.IHistoriquePrésentateur
     private lateinit var navController: NavController
     private lateinit var listView: ListView
-    private lateinit var historiqueService: HistoriqueService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,53 +34,52 @@ class HistoriqueVue : Fragment(), ContratVuePrésentateurHistorique.IHistoriqueV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         listView = view.findViewById(R.id.history_list_view)
-
-
-        historiqueService = HistoriqueService(requireContext())
-
-        chargerHistoriqueLocal()
-
         navController = findNavController()
 
-        val bottomNavigationView: BottomNavigationView = requireView().findViewById(R.id.bottomNavigation)
+        // Initialisation du présentateur avec SourceDeDonneeHTTP
+        val sourceDeDonnee: ISourceDeDonnee = SourceDeDonneeHTTP()
+        presentateur = HistoriquePrésentateur(this, sourceDeDonnee, Dispatchers.IO)
+
+        // Charger l'historique des recherches
+        presentateur.chargerHistoriqueRecherche()
+
+        configurerBottomNavigation(view)
+    }
+
+    private fun configurerBottomNavigation(view: View) {
+        val bottomNavigationView: BottomNavigationView = view.findViewById(R.id.bottomNavigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    Log.d("HistoriqueVue", "Navigating to Home")
-                    navController.navigate(R.id.ecranAccueil)
-                    true
-                }
-                R.id.nav_library -> {
-                    Log.d("HistoriqueVue", "Navigating to Library")
-                    navController.navigate(R.id.action_historiqueVue_to_ecranListeDeLecture)
-                    true
-                }
-                R.id.nav_search -> {
-                    Log.d("EcranAccueil", "Navigating to Search")
-                    navController.navigate(R.id.action_ecranAccueil_to_fragmentEcranRecherche)
-                    true
-                }
-                R.id.nav_profile -> {
-                    Log.d("HistoriqueVue", "Navigating to Profile")
-                    navController.navigate(R.id.action_historiqueVue_to_profilVue)
-                    true
-                }
+                R.id.nav_home -> navigateToAccueil()
+                R.id.nav_library -> navigateToLibrary()
+                R.id.nav_search -> navigateToSearch()
+                R.id.nav_profile -> navigateToProfile()
                 else -> false
             }
         }
     }
 
-    private fun chargerHistoriqueLocal() {
-        try {
-            val historique = historiqueService.obtenirHistorique()
-            afficherHistoriqueRecherche(historique)
-        } catch (e: Exception) {
-            afficherMessageErreur("Erreur lors du chargement de l'historique")
-        }
+    private fun navigateToAccueil(): Boolean {
+        navController.navigate(R.id.ecranAccueil)
+        return true
+    }
+
+    private fun navigateToLibrary(): Boolean {
+        navController.navigate(R.id.action_historiqueVue_to_ecranListeDeLecture)
+        return true
+    }
+
+    private fun navigateToSearch(): Boolean {
+        navController.navigate(R.id.action_ecranAccueil_to_fragmentEcranRecherche)
+        return true
+    }
+
+    private fun navigateToProfile(): Boolean {
+        navController.navigate(R.id.action_historiqueVue_to_profilVue)
+        return true
     }
 
     override fun afficherHistoriqueRecherche(historique: List<String>) {
@@ -89,8 +90,4 @@ class HistoriqueVue : Fragment(), ContratVuePrésentateurHistorique.IHistoriqueV
     override fun afficherMessageErreur(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
-
-
-
-
 }

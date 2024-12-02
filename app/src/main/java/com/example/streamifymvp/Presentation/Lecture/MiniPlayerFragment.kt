@@ -7,20 +7,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.bumptech.glide.Glide
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
+import kotlinx.coroutines.launch
 
 class MiniPlayerFragment(
-    private val mediaPlayer: MediaPlayer,
+    private val mediaPlayer: MediaPlayer?,
     private val chansonActuelle: Chanson,
     private val navigationAction: Int
 ) : Fragment() {
@@ -31,6 +28,20 @@ class MiniPlayerFragment(
     lateinit var albumArt: ImageView
     private lateinit var progressBar: SeekBar
     private var isPlaying = true
+    private val handler = Handler()
+
+    private val miseAJourBarreDeProgression = object : Runnable {
+        override fun run() {
+            try {
+                if (mediaPlayer != null && mediaPlayer.isPlaying) {
+                    progressBar.progress = mediaPlayer.currentPosition / 1000
+                }
+                handler.postDelayed(this, 1000)
+            } catch (e: IllegalStateException) {
+                Log.e("MiniPlayerFragment", "Erreur d'état du MediaPlayer: ${e.message}")
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.mini_player, container, false)
@@ -45,22 +56,38 @@ class MiniPlayerFragment(
         albumArt = view.findViewById(R.id.mini_player_album_art)
         progressBar = view.findViewById(R.id.mini_player_progress)
 
-        // Mettre à jour les éléments de la vue avec les informations actuelles
+        // Mettre à jour les informations actuelles
         songTitle.text = chansonActuelle.nom
-        val artiste = SourceDeDonneeBidon.instance.obtenirArtisteParId(chansonActuelle.artisteId)
-        artistName.text = artiste?.pseudoArtiste ?: "Artiste Inconnu"
-        albumArt.setImageResource(chansonActuelle.imageChanson)
+        lifecycleScope.launch {
+            val artiste = chansonActuelle.artisteId // Charger dynamiquement si nécessaire
+            artistName.text = artiste?.toString() ?: "Artiste Inconnu"
+        }
 
-        // Mettre à jour l'état du bouton play/pause
-        playPauseButton.setImageResource(if (mediaPlayer.isPlaying) R.drawable.pause else R.drawable.play)
+        Glide.with(requireContext())
+            .load(chansonActuelle.imageChanson)
+            .placeholder(R.drawable.placeholder_image)
+            .into(albumArt)
 
-        setupListeners(view)
-        setupProgressBar()
+        // Initialiser les contrôles
+        if (mediaPlayer != null) {
+            playPauseButton.setImageResource(if (mediaPlayer.isPlaying) R.drawable.pause else R.drawable.play)
+            progressBar.max = mediaPlayer.duration / 1000
+            progressBar.progress = mediaPlayer.currentPosition / 1000
+            setupListeners(view)
+            handler.post(miseAJourBarreDeProgression)
+        } else {
+            afficherErreur("MediaPlayer non initialisé.")
+        }
     }
 
     private fun setupListeners(view: View) {
         playPauseButton.setOnClickListener {
             try {
+                if (mediaPlayer == null) {
+                    afficherErreur("MediaPlayer non initialisé.")
+                    return@setOnClickListener
+                }
+
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.pause()
                     playPauseButton.setImageResource(R.drawable.play)
@@ -80,11 +107,9 @@ class MiniPlayerFragment(
 
                 val bundle = Bundle()
                 bundle.putInt("chansonId", chansonActuelle.id)
-                bundle.putBoolean("isPlaying", isPlaying)  // Ajoutez l'état de lecture
+                bundle.putBoolean("isPlaying", isPlaying)
 
-
-                navController.navigate(R.id.ecranLecture, bundle)
-
+                navController.navigate(navigationAction, bundle)
 
                 val miniPlayerContainer = requireActivity().findViewById<FrameLayout>(R.id.miniPlayerContainer)
                 miniPlayerContainer.visibility = View.GONE
@@ -95,24 +120,15 @@ class MiniPlayerFragment(
         }
     }
 
-
-    private fun setupProgressBar() {
-        progressBar.max = mediaPlayer.duration
-        progressBar.progress = mediaPlayer.currentPosition
-
-        val handler = Handler()
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                try {
-                    if (mediaPlayer.isPlaying) {
-                        progressBar.progress = mediaPlayer.currentPosition
-                    }
-                    handler.postDelayed(this, 1000)
-                } catch (e: IllegalStateException) {
-                    Log.e("MiniPlayerFragment", "Erreur d'état du MediaPlayer: ${e.message}")
-                }
-            }
-        }, 1000)
+    private fun afficherErreur(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        Log.e("MiniPlayerFragment", message)
+        playPauseButton.setImageResource(R.drawable.play)
+        progressBar.progress = 0
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        handler.removeCallbacks(miseAJourBarreDeProgression)
+    }
 }

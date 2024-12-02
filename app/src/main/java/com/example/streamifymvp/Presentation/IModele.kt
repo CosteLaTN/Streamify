@@ -5,14 +5,12 @@ import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 
 interface IModele {
-
-    fun obtenirToutesLesChansons(): List<Chanson>
-    fun obtenirNouveautés(): List<Chanson>
-    fun rechercherChansons(recherche: String): List<Chanson>
-    fun obtenirNouveauxArtistes(): List<Artiste>
-    fun ajouterChansonAuxFavoris(chanson: Chanson)
+    suspend fun obtenirToutesLesChansons(): List<Chanson>
+    suspend fun obtenirNouveautés(): List<Chanson>
+    suspend fun rechercherChansons(recherche: String): List<Chanson>
+    suspend fun obtenirNouveauxArtistes(): List<Artiste>
+    suspend fun ajouterChansonAuxFavoris(chanson: Chanson)
     suspend fun obtenirFavoris(): ListeDeLecture?
-    fun obtenirTousLesArtistes(): List<Artiste>
-    fun obtenirListeDeLectureParId(playlistId: Int): ListeDeLecture?
-
+    suspend fun obtenirTousLesArtistes(): List<Artiste>
+    suspend fun obtenirListeDeLectureParId(playlistId: Int): ListeDeLecture?
 }

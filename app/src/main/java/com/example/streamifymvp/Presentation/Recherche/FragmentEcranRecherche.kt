@@ -3,27 +3,22 @@ package com.example.streamifymvp.Presentation.Recherche
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.streamifymvp.Domaine.Service.ArtisteService
-import com.example.streamifymvp.Domaine.Service.ChansonService
-import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Presentation.Accueil.Adapter.ChansonAdapter
 import com.example.streamifymvp.Presentation.IModele
 import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.R
 import com.example.streamifymvp.SourceDeDonnees.HistoriqueDatabaseHelper
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
-
+import kotlinx.coroutines.*
 
 class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
 
@@ -36,6 +31,8 @@ class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
     private lateinit var historiqueListView: ListView
     private lateinit var historiqueAdapter: ArrayAdapter<String>
 
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,12 +43,8 @@ class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val chansonService = ChansonService(SourceDeDonneeBidon.instance)
-        val artisteService = ArtisteService(SourceDeDonneeBidon.instance)
-        val listeDeLectureService = ListeDeLectureService(SourceDeDonneeBidon.instance)
-        modele = Modele(chansonService, artisteService, listeDeLectureService)
+        modele = Modele()
         historiqueDbHelper = HistoriqueDatabaseHelper(requireContext())
-
         presentateur = RecherchePresentateur(modele, this)
 
         searchView = view.findViewById(R.id.searchView)
@@ -65,82 +58,91 @@ class FragmentEcranRecherche : Fragment(), RechercheContrat.IRechercheVue {
 
     @SuppressLint("Range")
     private fun setupHistoriqueList() {
-        val historique = historiqueDbHelper.readableDatabase.query(
-            HistoriqueDatabaseHelper.TABLE_HISTORIQUE,
-            arrayOf(HistoriqueDatabaseHelper.COLUMN_RECHERCHE),
-            null,
-            null,
-            null,
-            null,
-            "${HistoriqueDatabaseHelper.COLUMN_ID} DESC"
-        ).use { cursor ->
-            generateSequence { if (cursor.moveToNext()) cursor else null }
-                .map { it.getString(it.getColumnIndex(HistoriqueDatabaseHelper.COLUMN_RECHERCHE)) }
-                .toList()
+        val historique = coroutineScope.async(Dispatchers.IO) {
+            historiqueDbHelper.readableDatabase.query(
+                HistoriqueDatabaseHelper.TABLE_HISTORIQUE,
+                arrayOf(HistoriqueDatabaseHelper.COLUMN_RECHERCHE),
+                null,
+                null,
+                null,
+                null,
+                "${HistoriqueDatabaseHelper.COLUMN_ID} DESC"
+            ).use { cursor ->
+                generateSequence { if (cursor.moveToNext()) cursor else null }
+                    .map { it.getString(cursor.getColumnIndex(HistoriqueDatabaseHelper.COLUMN_RECHERCHE)) }
+                    .toList()
+            }
         }
 
-        historiqueAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, historique)
-        historiqueListView.adapter = historiqueAdapter
+        coroutineScope.launch {
+            val data = historique.await()
+            historiqueAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, data)
+            historiqueListView.adapter = historiqueAdapter
 
-        // Lorsque l'utilisateur clique sur une recherche précédente, la recherche est effectuée
-        historiqueListView.setOnItemClickListener { _, _, position, _ ->
-            val query = historiqueAdapter.getItem(position)
-            searchView.setQuery(query, true)
+            historiqueListView.setOnItemClickListener { _, _, position, _ ->
+                val query = historiqueAdapter.getItem(position)
+                searchView.setQuery(query, true)
+            }
+
+            historiqueListView.visibility = View.GONE
         }
-
-        // Masquer la liste par défaut
-        historiqueListView.visibility = View.GONE
     }
 
     private fun setupSearchListener() {
-        // Affiche l'historique lorsque l'utilisateur clique sur la barre de recherche
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                historiqueListView.visibility = View.VISIBLE
-            } else {
-                historiqueListView.visibility = View.GONE
-            }
+            historiqueListView.visibility = if (hasFocus) View.VISIBLE else View.GONE
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                // Masquer l'historique et enregistrer la recherche
                 historiqueListView.visibility = View.GONE
-                if (!query.isNullOrBlank()) {
-                    sauvegarderRecherche(query)
-                    presentateur.effectuerRecherche(query)
+                query?.let {
+                    sauvegarderRecherche(it)
+                    presentateur.effectuerRecherche(it)
                 }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if (!newText.isNullOrBlank()) {
-                    historiqueListView.visibility = View.GONE
-                }
+                historiqueListView.visibility = View.GONE
                 return true
             }
         })
     }
 
     private fun sauvegarderRecherche(recherche: String) {
-        val db = historiqueDbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(HistoriqueDatabaseHelper.COLUMN_RECHERCHE, recherche)
+        coroutineScope.launch(Dispatchers.IO) {
+            val db = historiqueDbHelper.writableDatabase
+            val values = ContentValues().apply {
+                put(HistoriqueDatabaseHelper.COLUMN_RECHERCHE, recherche)
+            }
+            db.insert(HistoriqueDatabaseHelper.TABLE_HISTORIQUE, null, values)
         }
-        db.insert(HistoriqueDatabaseHelper.TABLE_HISTORIQUE, null, values)
     }
 
     override fun afficherResultats(resultats: List<Chanson>) {
-        chansonAdapter = ChansonAdapter(resultats, modele.obtenirTousLesArtistes()) { chanson ->
-            val bundle = Bundle().apply {
-                putInt("chansonId", chanson.id)
+        lifecycleScope.launch {
+            val artistes = withContext(Dispatchers.IO) { modele.obtenirTousLesArtistes() }
+
+            chansonAdapter = ChansonAdapter(resultats, artistes) { chanson ->
+                val bundle = Bundle().apply {
+                    putInt("chansonId", chanson.id)
+                    putString("chansonImageUrl", chanson.imageChanson)
+                    putString("chansonAudioUrl", chanson.fichierAudio)
+                }
+                findNavController().navigate(R.id.action_fragmentEcranRecherche_to_ecranLecture, bundle)
             }
-            findNavController().navigate(R.id.action_fragmentEcranRecherche_to_ecranLecture, bundle)
+            resultsRecyclerView.adapter = chansonAdapter
         }
-        resultsRecyclerView.adapter = chansonAdapter
     }
 
+
     override fun afficherMessageAucunResultat() {
-        Toast.makeText(requireContext(), "Aucun résultat trouvé", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Aucun résultat trouvé.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        coroutineScope.cancel()
     }
 }

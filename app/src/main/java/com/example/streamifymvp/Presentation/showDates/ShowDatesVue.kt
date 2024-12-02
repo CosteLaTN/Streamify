@@ -38,7 +38,6 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         recyclerView = view.findViewById(R.id.recyclerViewShowDates)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         presentateur = ShowDatesPrésentateur(this)
@@ -46,11 +45,11 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
             ouvrirCalendrier(showDate)
         }
         recyclerView.adapter = adapter
+
         presentateur.chargerDates()
     }
 
     override fun afficherDates(dates: List<ShowDate>) {
-
         adapter.updateDates(dates)
     }
 
@@ -65,13 +64,14 @@ class ShowDatesVue : Fragment(), ContratVuePrésentateurShowDates.IShowDatesVue 
             putExtra(CalendarContract.Events.DESCRIPTION, showDate.details)
             putExtra(CalendarContract.Events.EVENT_LOCATION, showDate.location)
             putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, showDate.date.time)
-            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, showDate.date.time + 2 * 60 * 60 * 1000) // Durée de 2 heures par défaut
+            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, showDate.date.time + 2 * 60 * 60 * 1000) // 2 heures par défaut
         }
 
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
             startActivity(intent)
         } else {
-            Toast.makeText(requireContext(), "Aucune application de calendrier trouvée.", Toast.LENGTH_SHORT).show()
+            afficherMessageErreur("Aucune application de calendrier trouvée.")
         }
     }
 }
+

@@ -11,20 +11,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
-import com.example.streamifymvp.Presentation.Lecture.IEcranLecture
 import com.example.streamifymvp.Presentation.ListeDeLecture.Adapter.ListeDeLectureAdapter
-import com.example.streamifymvp.Presentation.ListeDeLecture.IEcranListeDeLecture
+import com.example.streamifymvp.Presentation.Modele
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
 
     private lateinit var adapter: ListeDeLectureAdapter
+    private lateinit var présentateur: IEcranListeDeLecturePresentateur
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +50,8 @@ class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
             afficherDialogCreationPlaylist()
         }
 
-        rafraichirListeDeLecture()
+        présentateur = EcranListeDeLecturePresentateur(this, Modele())
+        présentateur.chargerListesDeLecture()
     }
 
     override fun afficherDialogCreationPlaylist() {
@@ -67,7 +65,7 @@ class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
                 val editTextNom = dialogView.findViewById<EditText>(R.id.nomPlaylistCreation)
                 val nomPlaylist = editTextNom.text.toString()
                 if (nomPlaylist.isNotEmpty()) {
-                    ajouterNouvellePlaylist(nomPlaylist)
+                    présentateur.ajouterNouvellePlaylist(nomPlaylist)
                 } else {
                     Toast.makeText(requireContext(), "Le nom de la playlist ne peut pas être vide.", Toast.LENGTH_SHORT).show()
                 }
@@ -77,20 +75,15 @@ class EcranListeDeLecture : Fragment(), IEcranListeDeLecture {
             .show()
     }
 
-    override fun ajouterNouvellePlaylist(nom: String) {
-        val nouvellePlaylist = ListeDeLecture(
-            id = System.currentTimeMillis().toInt(),
-            nom = nom,
-            chansons = mutableListOf()
-        )
-        val chansonSource = SourceDeDonneeBidon.instance
-        chansonSource.ajouterPlaylist(nouvellePlaylist)
-        rafraichirListeDeLecture()
+    override fun rafraichirListeDeLecture(playlists: List<ListeDeLecture>) {
+        adapter.updateData(playlists)
     }
 
-    override fun rafraichirListeDeLecture() {
-        val chansonSource = SourceDeDonneeBidon.instance
-        val playlists = chansonSource.obtenirToutesLesListesDeLecture()
-        adapter.updateData(playlists)
+    override fun afficherMessageSucces(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun afficherMessageErreur(message: String) {
+        Toast.makeText(requireContext(), "Erreur : $message", Toast.LENGTH_SHORT).show()
     }
 }

@@ -4,50 +4,56 @@ import com.example.streamifymvp.Domaine.entitees.Artiste
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Domaine.Service.ArtisteService
-import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
 import com.example.streamifymvp.Domaine.Service.ChansonService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeHTTP
 
-class Modele(
-    private val chansonService: ChansonService,
-    private val artisteService: ArtisteService,
-    private val listeDeLectureService: ListeDeLectureService
-) : IModele {
+class Modele : IModele {
 
-    private var currentPlaylistId: Int? = null
+    private val sourceDeDonneeHTTP = SourceDeDonneeHTTP()
+    private val chansonService = ChansonService(sourceDeDonneeHTTP)
+    private val artisteService = ArtisteService(sourceDeDonneeHTTP)
+    private val listeDeLectureService = ListeDeLectureService(sourceDeDonneeHTTP)
 
-    override fun obtenirToutesLesChansons(): List<Chanson> {
+    override suspend fun obtenirToutesLesChansons(): List<Chanson> {
         return chansonService.obtenirToutesLesChansons()
     }
 
-    override fun obtenirNouveautés(): List<Chanson> {
+    override suspend fun obtenirNouveautés(): List<Chanson> {
         return chansonService.obtenirNouveautés()
     }
 
-    override fun rechercherChansons(recherche: String): List<Chanson> {
+    override suspend fun rechercherChansons(recherche: String): List<Chanson> {
         return chansonService.rechercherChansons(recherche)
     }
 
-    override fun obtenirNouveauxArtistes(): List<Artiste> {
+    override suspend fun obtenirNouveauxArtistes(): List<Artiste> {
         return artisteService.obtenirTousLesArtistes()
     }
 
-    override fun ajouterChansonAuxFavoris(chanson: Chanson) {
+    override suspend fun ajouterChansonAuxFavoris(chanson: Chanson) {
         chansonService.ajouterAuxFavoris(chanson)
     }
 
-     override suspend fun obtenirFavoris(): ListeDeLecture? {
-        return withContext(Dispatchers.IO) {
-            listeDeLectureService.obtenirListeDeLectureParNom("Favoris")
-        }
+    override suspend fun obtenirFavoris(): ListeDeLecture? {
+        return listeDeLectureService.obtenirListeDeLectureParNom("Favoris")
     }
 
-    override fun obtenirTousLesArtistes(): List<Artiste> {
+    override suspend fun obtenirTousLesArtistes(): List<Artiste> {
         return artisteService.obtenirTousLesArtistes()
     }
 
-    override fun obtenirListeDeLectureParId(playlistId: Int): ListeDeLecture? {
+    override suspend fun obtenirListeDeLectureParId(playlistId: Int): ListeDeLecture? {
         return listeDeLectureService.obtenirListeDeLectureParId(playlistId)
     }
+    suspend fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture>{
+        return listeDeLectureService.obtenirToutesLesListesDeLecture()
+    }
+    suspend fun ajouterChansonAPlaylist(playlistId: Int, chanson: Chanson){
+        return listeDeLectureService.ajouterChansonAPlaylist(playlistId, chanson)
+    }
+    suspend fun ajouterPlaylist(playlist: ListeDeLecture) {
+        listeDeLectureService.ajouterPlaylist(playlist)
+    }
+
 }

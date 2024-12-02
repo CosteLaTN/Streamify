@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.R
 
@@ -25,7 +26,9 @@ class NouveauteAdapter(private var chansons: List<Chanson>) :
     override fun onBindViewHolder(holder: NouveauteViewHolder, position: Int) {
         val chanson = chansons[position]
         holder.titreView.text = chanson.nom
-        holder.imageView.setImageResource(chanson.imageChanson)
+        Glide.with(holder.itemView.context)
+            .load(chanson.imageChanson)
+            .into(holder.imageView)
     }
 
     override fun getItemCount(): Int = chansons.size
@@ -35,4 +38,3 @@ class NouveauteAdapter(private var chansons: List<Chanson>) :
         notifyDataSetChanged()
     }
 }
-

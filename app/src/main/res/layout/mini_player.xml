@@ -21,7 +21,7 @@
             android:id="@+id/mini_player_album_art"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/humps"
+            android:src="@drawable/placeholder_image"
             android:scaleType="centerCrop" />
 
         <LinearLayout

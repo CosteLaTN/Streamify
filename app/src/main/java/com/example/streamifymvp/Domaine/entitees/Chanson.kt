@@ -7,7 +7,7 @@ data class Chanson(
     val genre: String,
     val dureeAlbum: String,
     val dureeMusique: String,
-    val imageChanson: Int,
-    val fichierAudio: Int,
+    val imageChanson: String,
+    val fichierAudio: String,
     val albumId : Int?,
     val artisteId: Int)

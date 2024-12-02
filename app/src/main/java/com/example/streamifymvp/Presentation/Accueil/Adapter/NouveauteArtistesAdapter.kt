@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.streamifymvp.Domaine.entitees.Artiste
 import com.example.streamifymvp.R
 
@@ -26,7 +27,12 @@ class NouveauxArtistesAdapter(private var artistes: List<Artiste>) :
     override fun onBindViewHolder(holder: ArtisteViewHolder, position: Int) {
         val artiste = artistes[position]
         holder.pseudoArtisteView.text = artiste.pseudoArtiste
-        holder.imageView.setImageResource(artiste.imageArtiste)
+
+        // Charger l'image via l'API
+        Glide.with(holder.itemView.context)
+            .load("http://192.168.182.1:8080/images/${artiste.imageArtiste}")
+            .placeholder(R.drawable.placeholder_image)
+            .into(holder.imageView)
     }
 
     override fun getItemCount(): Int = artistes.size
@@ -36,4 +42,3 @@ class NouveauxArtistesAdapter(private var artistes: List<Artiste>) :
         notifyDataSetChanged()
     }
 }
-
