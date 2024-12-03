@@ -55,5 +55,9 @@ class Modele : IModele {
     suspend fun ajouterPlaylist(playlist: ListeDeLecture) {
         listeDeLectureService.ajouterPlaylist(playlist)
     }
+    suspend fun obtenirChansonsDeLaListeDeLecture(playlistId: Int): List<Chanson> {
+        return listeDeLectureService.obtenirChansonsDeLaListeDeLecture(playlistId)
+    }
+
 
 }

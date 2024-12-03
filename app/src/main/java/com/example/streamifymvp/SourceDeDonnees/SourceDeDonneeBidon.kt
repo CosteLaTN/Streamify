@@ -78,21 +78,21 @@ class SourceDeDonneeBidon : ISourceDeDonnee {
             prenom = "Axl",
             nom = "Rose",
             pseudoArtiste = "Guns N' Roses",
-            imageArtiste = R.drawable.cry
+            imageArtiste = "http://192.168.182.1/images/cry.jpg"
         ),
         Artiste(
             id = 2,
             prenom = "will.i.am",
             nom = "",
             pseudoArtiste = "The Black Eyed Peas",
-            imageArtiste = R.drawable.placeholder_image
+            imageArtiste ="http://192.168.182.1/images/cry.jpg"
         ),
         Artiste(
             id = 3,
             prenom = "Guy-Manuel de Homem-Christo",
             nom = "& Thomas Bangalter",
             pseudoArtiste = "Daft Punk",
-            imageArtiste = R.drawable.random_access_memories
+            imageArtiste = "http://192.168.182.1/images/cry.jpg"
         )
     )
 
@@ -141,13 +141,6 @@ class SourceDeDonneeBidon : ISourceDeDonnee {
 
     override suspend fun obtenirPlaylist(nom: String): ListeDeLecture? {
         return listesDeLecture.find { it.nom.equals(nom, ignoreCase = true) }
-    }
-
-    override suspend fun ajouterChansonALaPlaylist(nomPlaylist: String, chanson: Chanson) {
-        val playlist = obtenirPlaylist(nomPlaylist)
-        if (playlist != null && !playlist.chansons.contains(chanson)) {
-            playlist.chansons.add(chanson)
-        }
     }
 
     override suspend fun obtenirFavoris(): ListeDeLecture? {

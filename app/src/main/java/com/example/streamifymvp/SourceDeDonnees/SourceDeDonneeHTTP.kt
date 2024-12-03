@@ -1,5 +1,6 @@
 package com.example.streamifymvp.SourceDeDonnees
 
+import android.util.Log
 import com.example.streamifymvp.Domaine.entitees.*
 
 class SourceDeDonneeHTTP : ISourceDeDonnee {
@@ -29,8 +30,13 @@ class SourceDeDonneeHTTP : ISourceDeDonnee {
     }
 
     override suspend fun obtenirToutesLesChansons(): List<Chanson> {
-        return api.getAllChansons()
+        val chansons = api.getAllChansons()
+        chansons.forEach { chanson ->
+            Log.d("SourceDeDonneeHTTP", "Chanson: ${chanson.nom}, artisteId: ${chanson.artisteId}")
+        }
+        return chansons
     }
+
 
     override suspend fun obtenirToutesLesListesDeLecture(): List<ListeDeLecture> {
         return api.getAllPlaylists()
@@ -51,12 +57,6 @@ class SourceDeDonneeHTTP : ISourceDeDonnee {
     override suspend fun obtenirPlaylist(nom: String): ListeDeLecture? {
        val playlists = runCatching { obtenirToutesLesListesDeLecture() }.getOrDefault(emptyList())
        return playlists.find { it.nom.equals(nom, ignoreCase = true) }
-    }
-
-   override suspend fun ajouterChansonALaPlaylist(nomPlaylist: String, chanson: Chanson) {
-        val playlist = obtenirPlaylist(nomPlaylist)
-          ?: throw Exception("Playlist introuvable : $nomPlaylist")
-       runCatching { ajouterChansonALaPlaylist(playlist.id, chanson) }
     }
 
    override suspend fun obtenirFavoris(): ListeDeLecture? = obtenirPlaylist("Favoris")

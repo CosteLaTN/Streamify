@@ -41,7 +41,7 @@ class ChansonLDLAdapter(
 
             // Charger l'image via l'API
             Glide.with(itemView.context)
-                .load("http://192.168.182.1:8080/images/${chanson.imageChanson}")
+                .load(chanson.imageChanson)
                 .placeholder(R.drawable.placeholder_image)
                 .into(imageView)
 

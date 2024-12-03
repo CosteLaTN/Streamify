@@ -24,14 +24,10 @@ class ListeDeLectureService(private val chansonSource: ISourceDeDonnee) {
         return playlist?.chansons ?: emptyList()
     }
 
-   suspend fun ajouterChansonAPlaylist(playlistId: Int, chanson: Chanson) {
-       val playlist = chansonSource.obtenirListeDeLectureParId(playlistId)
-       playlist?.let {
-            if (!it.chansons.contains(chanson)) {
-                it.chansons.add(chanson)
-            }
-       }
-   }
+    suspend fun ajouterChansonAPlaylist(playlistId: Int, chanson: Chanson) {
+        chansonSource.ajouterChansonALaPlaylist(playlistId, chanson)
+    }
+
     suspend fun ajouterPlaylist(playlist: ListeDeLecture) {
         chansonSource.ajouterPlaylist(playlist)
     }

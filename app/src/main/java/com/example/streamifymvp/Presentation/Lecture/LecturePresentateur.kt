@@ -2,6 +2,7 @@ package com.example.streamifymvp.Presentation.Lecture
 
 import android.util.Log
 import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.Domaine.entitees.ChansonAvecArtiste
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Presentation.Modele
 import kotlinx.coroutines.*
@@ -63,5 +64,10 @@ class LecturePresentateur(
             null
         }
     }
+    suspend fun obtenirChansonsDeLaListeDeLecture(playlistId: Int): List<Chanson> {
+        return modele.obtenirChansonsDeLaListeDeLecture(playlistId)
+    }
+
+
 
 }

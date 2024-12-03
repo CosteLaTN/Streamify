@@ -30,8 +30,8 @@ class NouveauxArtistesAdapter(private var artistes: List<Artiste>) :
 
         // Charger l'image via l'API
         Glide.with(holder.itemView.context)
-            .load("http://192.168.182.1:8080/images/${artiste.imageArtiste}")
-            .placeholder(R.drawable.placeholder_image)
+            .load(artiste.imageArtiste)
+
             .into(holder.imageView)
     }
 

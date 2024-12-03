@@ -21,7 +21,7 @@ interface ISourceDeDonnee {
 
     // Méthodes locales
      suspend fun obtenirPlaylist(nom: String): ListeDeLecture?
-    suspend fun ajouterChansonALaPlaylist(nomPlaylist: String, chanson: Chanson)
+
     suspend fun obtenirFavoris(): ListeDeLecture?
     suspend fun ajouterAuxFavoris(chanson: Chanson)
 }
