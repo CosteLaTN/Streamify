@@ -32,7 +32,7 @@ class SourceDeDonneeHTTP : ISourceDeDonnee {
     override suspend fun obtenirToutesLesChansons(): List<Chanson> {
         val chansons = api.getAllChansons()
         chansons.forEach { chanson ->
-            Log.d("SourceDeDonneeHTTP", "Chanson: ${chanson.nom}, artisteId: ${chanson.artisteId}")
+            Log.d("SourceDeDonneeHTTP", "Chanson: ${chanson.nom}, artisteId: ${chanson.artiste}")
         }
         return chansons
     }

@@ -31,9 +31,9 @@ class ChansonAdapter(
 
     override fun onBindViewHolder(holder: ChansonViewHolder, position: Int) {
         val chanson = chansons[position]
-        val artiste = artistes.find { it.id == chanson.artisteId }
+        val artiste = chanson.artiste
         if (artiste == null) {
-            Log.d("ChansonAdapter", "Artiste non trouvé pour chanson: ${chanson.nom} avec artisteId: ${chanson.artisteId}")
+            Log.d("ChansonAdapter", "Artiste non trouvé pour chanson: ${chanson.nom} avec artisteId: ${chanson.artiste}")
         } else {
             Log.d("ChansonAdapter", "Artiste trouvé: ${artiste.pseudoArtiste} pour chanson: ${chanson.nom}")
         }
@@ -49,6 +49,7 @@ class ChansonAdapter(
 
         holder.itemView.setOnClickListener {
             onChansonClick(chanson)
+
         }
     }
 

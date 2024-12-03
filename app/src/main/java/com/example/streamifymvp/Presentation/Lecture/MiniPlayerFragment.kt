@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.Presentation.Lecture.MediaPlayerManager.isPlayingCurrentChanson
 import com.example.streamifymvp.R
 import kotlinx.coroutines.launch
 
@@ -41,14 +42,25 @@ class MiniPlayerFragment(
 
         // Mise à jour de l'interface utilisateur
         songTitle.text = chansonActuelle.nom
+        artistName.text = chansonActuelle.artiste?.pseudoArtiste
         Glide.with(requireContext())
             .load(chansonActuelle.imageChanson)
             .placeholder(R.drawable.placeholder_image)
             .into(albumArt)
 
         MediaPlayerManager.isPlaying.observe(viewLifecycleOwner) { isPlaying ->
-            playPauseButton.setImageResource(if (isPlaying) R.drawable.pause else R.drawable.play)
+            val isCurrentChansonPlaying = MediaPlayerManager.getMediaPlayer()?.isPlayingCurrentChanson(chansonActuelle) == true
+
+            if (!isCurrentChansonPlaying && !isPlaying) {
+                // Cacher le MiniPlayer si une autre chanson est jouée ou si aucune chanson n'est en lecture
+                val miniPlayerContainer = requireActivity().findViewById<FrameLayout>(R.id.miniPlayerContainer)
+                miniPlayerContainer.visibility = View.GONE
+            } else {
+                // Met à jour le bouton Play/Pause uniquement si la chanson correspond
+                playPauseButton.setImageResource(if (isPlaying) R.drawable.pause else R.drawable.play)
+            }
         }
+
 
         MediaPlayerManager.currentPosition.observe(viewLifecycleOwner) { position ->
             progressBar.progress = position / 1000

@@ -9,5 +9,6 @@ data class Chanson(
     val dureeMusique: String,
     val imageChanson: String,
     val fichierAudio: String,
-    val albumId : Int?,
-    val artisteId: Int)
+    val albumId: Int?,
+    val artiste: Artiste? // Inclure l'objet Artiste au lieu de artisteId
+)

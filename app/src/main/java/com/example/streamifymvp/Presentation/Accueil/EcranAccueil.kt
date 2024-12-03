@@ -58,8 +58,8 @@ class EcranAccueil : Fragment(), AccueilVue {
             val bundle = Bundle().apply {
                 putInt("chansonId", chanson.id)
                 putString("chansonNom", chanson.nom)
-                putString("chansonArtiste", "Artiste inconnu") // Mise à jour lors du chargement des artistes
-                putInt("artisteId", chanson.artisteId)
+                putString("chansonArtiste", chanson.artiste?.pseudoArtiste) // Mise à jour lors du chargement des artistes
+                chanson.artiste?.let { putInt("artisteId", it.id) }
                 putString("chansonImage", chanson.imageChanson)
                 putString("chansonFichier", chanson.fichierAudio)
             }
@@ -76,8 +76,8 @@ class EcranAccueil : Fragment(), AccueilVue {
             val bundle = Bundle().apply {
                 putInt("chansonId", chanson.id)
                 putString("chansonNom", chanson.nom)
-                putString("chansonArtiste", "Artiste inconnu") // Mise à jour lors du chargement des artistes
-                putInt("artisteId", chanson.artisteId)
+                putString("chansonArtiste", chanson.artiste?.pseudoArtiste) // Mise à jour lors du chargement des artistes
+                chanson.artiste?.let { putInt("artisteId", it.id) }
                 putString("chansonImage", chanson.imageChanson)
                 putString("chansonFichier", chanson.fichierAudio)
             }

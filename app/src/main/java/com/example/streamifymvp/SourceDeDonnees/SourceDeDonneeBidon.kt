@@ -122,7 +122,7 @@ class SourceDeDonneeBidon : ISourceDeDonnee {
             imageChanson = "http://192.168.182.1/images/cry.jpg",
             fichierAudio = "http://192.168.182.1/audio/lovin.mp3",
             albumId = 1,
-            artisteId = 1
+            artiste = artistes.get(1)
         )
     )
 

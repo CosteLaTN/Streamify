@@ -32,10 +32,10 @@ class NouveauteAdapter(
 
     override fun onBindViewHolder(holder: NouveauteViewHolder, position: Int) {
         val chanson = chansons[position]
-        val artiste = artistes.find { it.id == chanson.artisteId }
+        val artiste = chanson.artiste
 
         if (artiste == null) {
-            Log.d("NouveauteAdapter", "Artiste non trouvé pour chanson: ${chanson.nom} avec artisteId: ${chanson.artisteId}")
+            Log.d("NouveauteAdapter", "Artiste non trouvé pour chanson: ${chanson.nom} avec artisteId: ${chanson.artiste}")
         } else {
             Log.d("NouveauteAdapter", "Artiste trouvé: ${artiste.pseudoArtiste} pour chanson: ${chanson.nom}")
         }

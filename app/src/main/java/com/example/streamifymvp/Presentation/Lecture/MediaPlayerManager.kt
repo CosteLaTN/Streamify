@@ -121,6 +121,11 @@ object MediaPlayerManager {
     fun isMediaPlayerValid(): Boolean {
         return mediaPlayer != null && _isPlaying.value == true
     }
+    fun MediaPlayer.isPlayingCurrentChanson(chanson: Chanson): Boolean {
+        return currentChanson?.id == chanson.id
+    }
+
+
 
 }
 

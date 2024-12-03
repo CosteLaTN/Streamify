@@ -33,9 +33,9 @@ class ChansonLDLAdapter(
 
             // Charger le nom de l'artiste depuis l'API
             parentFragment.lifecycleScope.launch(Dispatchers.IO) {
-                val pseudoArtiste = présentateur.obtenirPseudoArtiste(chanson.artisteId)
+                val artiste = chanson.artiste
                 withContext(Dispatchers.Main) {
-                    artisteTextView.text = pseudoArtiste
+                    artisteTextView.text = artiste?.pseudoArtiste
                 }
             }
 

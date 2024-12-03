@@ -89,7 +89,7 @@ class EcranLecture : Fragment(), IEcranLecture {
             } else {
                 présentateur.obtenirChansonsParGenre(chansonActuelle.genre)
             }
-            currentSongIndex = chansonsDuGenre.indexOf(chansonActuelle)
+            currentSongIndex = chansonsDuGenre.indexOfFirst { it.id == chansonActuelle.id }
 
             withContext(Dispatchers.Main) {
                 jouerChanson(chansonActuelle)
@@ -113,8 +113,8 @@ class EcranLecture : Fragment(), IEcranLecture {
         MediaPlayerManager.playChanson(chanson)
         songTitle.text = chanson.nom
         lifecycleScope.launch {
-            val artistePseudo = présentateur.obtenirPseudoArtiste(chanson.artisteId)
-            artistName.text = artistePseudo
+            val artistePseudo = chanson.artiste?.pseudoArtiste
+            artistName.text = artistePseudo.toString()
         }
         Glide.with(requireContext())
             .load(chanson.imageChanson)

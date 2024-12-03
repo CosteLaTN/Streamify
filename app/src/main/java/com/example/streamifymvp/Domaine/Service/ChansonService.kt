@@ -34,7 +34,7 @@ class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.i
     suspend fun rechercherChansons(recherche: String): List<Chanson> {
         val rechercheMinuscule = recherche.lowercase()
         return source.obtenirToutesLesChansons().filter {
-            it.nom.lowercase().contains(rechercheMinuscule) || it.genre.lowercase().contains(rechercheMinuscule)
+            it.nom.lowercase().contains(rechercheMinuscule) || it.genre.lowercase().contains(rechercheMinuscule) || it.artiste!!.pseudoArtiste.lowercase().contains(rechercheMinuscule)
         }
     }
 
