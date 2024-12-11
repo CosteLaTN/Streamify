@@ -2,20 +2,39 @@ package com.example.streamifymvp.SourceDeDonnees
 
 import android.util.Log
 import com.example.streamifymvp.Domaine.entitees.*
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class SourceDeDonneeHTTP : ISourceDeDonnee {
 
+    private var profil: Profil? = Profil("Jean Dupont", "jdupont")
+    companion object {
+        val instance: SourceDeDonneeHTTP by lazy { SourceDeDonneeHTTP() }
+    }
+    override fun obtenirProfil(): Profil? {
+        return profil
+    }
     private val api = RetrofitClient.instance.create(ApiService::class.java)
 
-    override fun obtenirProfil(): Profil? = null
 
-    override fun modifierNomUtilisateur(nouveauNom: String): Boolean = false
 
-    override fun modifierUsername(nouveauUsername: String): Boolean = false
+    override fun modifierNomUtilisateur(nouveauNom: String): Boolean {
+        return if (profil != null) {
+            profil!!.nom = nouveauNom
+            true
+        } else {
+            false
+        }
+    }
 
-    override fun obtenirHistoriqueRecherche(): List<String> = emptyList()
-
-    override fun obtenirToutesLesDatesDeShow(): List<ShowDate> = emptyList()
+    override fun modifierUsername(nouveauUsername: String): Boolean {
+        return if (profil != null) {
+            profil!!.username = nouveauUsername
+            true
+        } else {
+            false
+        }
+    }
 
     override suspend fun obtenirTousLesArtistes(): List<Artiste> {
         return api.getAllArtistes()
@@ -59,11 +78,96 @@ class SourceDeDonneeHTTP : ISourceDeDonnee {
        return playlists.find { it.nom.equals(nom, ignoreCase = true) }
     }
 
-   override suspend fun obtenirFavoris(): ListeDeLecture? = obtenirPlaylist("Favoris")
+    override suspend fun obtenirFavoris(): ListeDeLecture? {
+        return obtenirPlaylist("Favoris")
+    }
 
     override suspend fun ajouterAuxFavoris(chanson: Chanson) {
         val favoris = obtenirFavoris()
             ?: throw Exception("La playlist des favoris est introuvable.")
         ajouterChansonALaPlaylist(favoris.id, chanson)
     }
+
+
+    private val historique = listOf("Daft Punk", "Discovery", "League of legends")
+
+    override fun obtenirHistoriqueRecherche(): List<String> {
+        return historique
+    }
+
+    private val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    private val datesDisponibles = listOf(
+        ShowDate(
+            title = "Concert de Daft Punk",
+            details = "Un concert légendaire de Daft Punk",
+            date = format.parse("01/01/2024")!!,
+            location = "Paris, France"
+        ),
+        ShowDate(
+            title = "Concert de Adele",
+            details = "Performance live de Adele",
+            date = format.parse("05/01/2024")!!,
+            location = "Londres, UK"
+        ),
+        ShowDate(
+            title = "Festival de musique électronique",
+            details = "Festival avec de nombreux artistes de musique électronique",
+            date = format.parse("10/01/2024")!!,
+            location = "Berlin, Allemagne"
+        )
+    )
+
+    override fun obtenirToutesLesDatesDeShow(): List<ShowDate> {
+        return datesDisponibles
+    }
+
+    //override fun obtenirToutesLesDatesDeShow(): List<ShowDate> = emptyList()
+
+    private val artistes = listOf(
+        Artiste(
+            id = 1,
+            prenom = "Axl",
+            nom = "Rose",
+            pseudoArtiste = "Guns N' Roses",
+            imageArtiste = "http://192.168.182.1/images/cry.jpg"
+        ),
+        Artiste(
+            id = 2,
+            prenom = "will.i.am",
+            nom = "",
+            pseudoArtiste = "The Black Eyed Peas",
+            imageArtiste ="http://192.168.182.1/images/cry.jpg"
+        ),
+        Artiste(
+            id = 3,
+            prenom = "Guy-Manuel de Homem-Christo",
+            nom = "& Thomas Bangalter",
+            pseudoArtiste = "Daft Punk",
+            imageArtiste = "http://192.168.182.1/images/cry.jpg"
+        )
+    )
+    /*private val chansons = listOf(
+        Chanson(
+            id = 1,
+            nom = "Dont Cry",
+            datePublication = "2019-09-17",
+            genre = "Rock",
+            dureeAlbum = "45:00",
+            dureeMusique = "4:44",
+            imageChanson = "http://192.168.182.1/images/cry.jpg",
+            fichierAudio = "http://192.168.182.1/audio/lovin.mp3",
+            albumId = 1,
+            artiste = artistes.get(1)
+        )
+    )*/
+
+    private val listesDeLecture = mutableListOf<ListeDeLecture>(
+        ListeDeLecture(
+            id = 1,
+            nom = "Favoris",
+            chansons = mutableListOf()
+        )
+    )
+
+
 }

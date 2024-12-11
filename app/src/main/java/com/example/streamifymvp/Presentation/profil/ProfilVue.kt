@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.streamifymvp.R
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeHTTP
 import java.util.*
 
 class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
@@ -43,7 +43,7 @@ class ProfilVue : Fragment(), ContratVuePrésentateurProfil.IProfilVue {
         usernameTextView = view.findViewById(R.id.username_profile)
         profileImageView = view.findViewById(R.id.profilepic_profile)
 
-        presentateur = ProfilPrésentateur(this, service = SourceDeDonneeBidon())
+        presentateur = ProfilPrésentateur(this, service = SourceDeDonneeHTTP())
 
         return view
     }

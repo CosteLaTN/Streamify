@@ -2,12 +2,12 @@ package com.example.streamifymvp.Domaine.Service
 
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeHTTP
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeBidon.instance) {
+class ChansonService(private val source: ISourceDeDonnee = SourceDeDonneeHTTP.instance) {
 
     suspend fun obtenirToutesLesChansons(): List<Chanson> {
         return source.obtenirToutesLesChansons()

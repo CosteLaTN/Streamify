@@ -1,13 +1,13 @@
 package com.example.streamifymvp.Presentation.showDates
 
 import android.util.Log
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeHTTP
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class ShowDatesPrésentateur(
     private val vue: ContratVuePrésentateurShowDates.IShowDatesVue,
-    private val service: SourceDeDonneeBidon = SourceDeDonneeBidon()
+    private val service: SourceDeDonneeHTTP = SourceDeDonneeHTTP()
 ) : ContratVuePrésentateurShowDates.IShowDatesPrésentateur, CoroutineScope {
 
     private val job = Job()

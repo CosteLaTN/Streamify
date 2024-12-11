@@ -1,7 +1,6 @@
 package com.example.streamifymvp.Presentation.profil
 
 import com.example.streamifymvp.Presentation.profil.ProfilPrésentateur
-import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeBidon
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
