@@ -1,80 +1,58 @@
 package com.example.streamifymvp.Presentation.Historique
 
-import com.example.streamifymvp.Presentation.Historique.HistoriquePrésentateur
 import com.example.streamifymvp.SourceDeDonnees.ISourceDeDonnee
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
-import org.junit.After
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class HistoriquePresentateurTests {
 
     @Mock
-    private lateinit var vue: ContratVuePrésentateurHistorique.IHistoriqueVue
+    private lateinit var mockVue: ContratVuePrésentateurHistorique.IHistoriqueVue
+
     @Mock
-    private lateinit var service: ISourceDeDonnee
+    private lateinit var mockService: ISourceDeDonnee
 
-    private lateinit var presentateur: HistoriquePrésentateur
-
+    private lateinit var présentateur: HistoriquePrésentateur
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-
-        Dispatchers.setMain(testDispatcher)
-        presentateur = HistoriquePrésentateur(vue, service, testDispatcher)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+        présentateur = HistoriquePrésentateur(mockVue, mockService, testDispatcher)
     }
 
     @Test
-    fun `etant donne l'historique lorsqu'on appelle chargerHistoriqueRecherche alors afficher l'historique s'il existe`() = runTest {
-        // Arrange
-        val historique = listOf("Recherche 1", "Recherche 2")
-        `when`(service.obtenirHistoriqueRecherche()).thenReturn(historique)
+    fun `étant donné un service avec un historique non vide lorsqu'on charge l'historique, la vue affiche l'historique`() = runTest(testDispatcher) {
+        val historique = listOf("Recherche 1", "Recherche 2", "Recherche 3")
+        Mockito.`when`(mockService.obtenirHistoriqueRecherche()).thenReturn(historique)
 
-        // Act
-        presentateur.chargerHistoriqueRecherche()
-        testDispatcher.scheduler.advanceUntilIdle()
+        présentateur.chargerHistoriqueRecherche()
 
-        // Assert
-        verify(vue).afficherHistoriqueRecherche(historique)
+        Mockito.verify(mockVue).afficherHistoriqueRecherche(historique)
     }
 
     @Test
-    fun `etant donne l'absence d'historique lorsqu'on appelle chargerHistoriqueRecherche alors afficher message d'erreur`() = runTest {
-        // Arrange
-        val historique = emptyList<String>()
-        `when`(service.obtenirHistoriqueRecherche()).thenReturn(historique)
+    fun `étant donné un service avec un historique vide lorsqu'on charge l'historique, la vue affiche un message d'erreur`() = runTest(testDispatcher) {
+        Mockito.`when`(mockService.obtenirHistoriqueRecherche()).thenReturn(emptyList())
 
-        // Act
-        presentateur.chargerHistoriqueRecherche()
-        testDispatcher.scheduler.advanceUntilIdle()
+        présentateur.chargerHistoriqueRecherche()
 
-        // Assert
-        verify(vue).afficherMessageErreur("Aucun historique trouvé.")
+        Mockito.verify(mockVue).afficherMessageErreur("Aucun historique trouvé.")
     }
 
     @Test
-    fun `etant donne une exception lorsqu'on appelle chargerHistoriqueRecherche alors afficher message d'erreur`() = runTest {
-        // Arrange
-        `when`(service.obtenirHistoriqueRecherche()).thenThrow(RuntimeException("Erreur simulée"))
+    fun `étant donné un service qui génère une exception lorsqu'on charge l'historique, la vue affiche un message d'erreur générique`() = runTest(testDispatcher) {
+        Mockito.`when`(mockService.obtenirHistoriqueRecherche()).thenThrow(RuntimeException("Erreur de connexion"))
 
-        // Act
-        presentateur.chargerHistoriqueRecherche()
-        testDispatcher.scheduler.advanceUntilIdle()
+        présentateur.chargerHistoriqueRecherche()
 
-        // Assert
-        verify(vue).afficherMessageErreur("Erreur lors du chargement de l'historique de recherche")
+        Mockito.verify(mockVue).afficherMessageErreur("Erreur lors du chargement de l'historique de recherche.")
     }
 }

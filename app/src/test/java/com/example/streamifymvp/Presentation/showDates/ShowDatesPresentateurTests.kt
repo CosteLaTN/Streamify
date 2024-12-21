@@ -1,84 +1,61 @@
 package com.example.streamifymvp.Presentation.showDates
 
-
 import com.example.streamifymvp.Domaine.entitees.ShowDate
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
-import junit.framework.TestCase.assertEquals
+import com.example.streamifymvp.SourceDeDonnees.SourceDeDonneeHTTP
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
-import org.junit.After
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import io.mockk.slot
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 
-
-
-@OptIn(ExperimentalCoroutinesApi::class)
 class ShowDatesPresentateurTests {
 
-    private lateinit var vue: ContratVuePrésentateurShowDates.IShowDatesVue
-    private lateinit var presentateur: ShowDatesPrésentateur
-    private lateinit var service: SourceDeDonneeBidon
+    @Mock
+    private lateinit var mockVue: ContratVuePrésentateurShowDates.IShowDatesVue
+
+    @Mock
+    private lateinit var mockService: SourceDeDonneeHTTP
+
+    private lateinit var présentateur: ShowDatesPrésentateur
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher)
-        vue = mockk(relaxed = true)
-        service = mockk()
-        presentateur = ShowDatesPrésentateur(vue, service)
-
-
-        coEvery { service.obtenirToutesLesDatesDeShow() } returns listOf(
-            ShowDate("Concert de Daft Punk", "Un concert légendaire de Daft Punk", mockk(), "Paris, France")
-        )
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+        MockitoAnnotations.openMocks(this)
+        présentateur = ShowDatesPrésentateur(mockVue, mockService)
     }
 
     @Test
-    fun `etant donne des dates lorsqu'on appelle chargerDates alors afficher les dates si elles existent`() = runTest {
-        // Arrange
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date = dateFormat.parse("2023-11-23") ?: Date()
-        val expectedDates = listOf(
-            ShowDate("Concert de Daft Punk", "Un concert légendaire de Daft Punk", date, "Paris, France")
+    fun `étant donné des dates disponibles, lorsqu'on charge les dates, elles sont affichées`() = runTest(testDispatcher) {
+        val mockDates = listOf(
+            ShowDate(title = "Concert 1", details = "Détails du concert 1", location = "Lieu 1", date = java.util.Date()),
+            ShowDate(title = "Concert 2", details = "Détails du concert 2", location = "Lieu 2", date = java.util.Date())
         )
+        Mockito.`when`(mockService.obtenirToutesLesDatesDeShow()).thenReturn(mockDates)
 
+        présentateur.chargerDates()
 
-        coEvery { service.obtenirToutesLesDatesDeShow() } returns expectedDates
-
-        // Act
-        presentateur.chargerDates()
-        advanceUntilIdle()
-
-        // Assert
-        val slot = slot<List<ShowDate>>()
-        coVerify { vue.afficherDates(capture(slot)) }
-
-
-        val capturedDates = slot.captured
-        assertEquals(expectedDates.size, capturedDates.size)
-        assertEquals(expectedDates[0].title, capturedDates[0].title)
-        assertEquals(expectedDates[0].details, capturedDates[0].details)
-        assertEquals(expectedDates[0].location, capturedDates[0].location)
-
-
-        val expectedDateString = dateFormat.format(expectedDates[0].date)
-        val capturedDateString = dateFormat.format(capturedDates[0].date)
-        assertEquals(expectedDateString, capturedDateString)
+        Mockito.verify(mockVue).afficherDates(mockDates)
     }
 
+    @Test
+    fun `étant donné aucune date disponible, lorsqu'on charge les dates, un message d'erreur est affiché`() = runTest(testDispatcher) {
+        Mockito.`when`(mockService.obtenirToutesLesDatesDeShow()).thenReturn(emptyList())
 
+        présentateur.chargerDates()
 
+        Mockito.verify(mockVue).afficherMessageErreur("Aucune date disponible.")
+    }
 
+    @Test
+    fun `étant donné une erreur lors du chargement des dates, lorsqu'on charge les dates, un message d'erreur est affiché`() = runTest(testDispatcher) {
+        Mockito.`when`(mockService.obtenirToutesLesDatesDeShow()).thenThrow(RuntimeException("Erreur réseau"))
+
+        présentateur.chargerDates()
+
+        Mockito.verify(mockVue).afficherMessageErreur("Erreur lors du chargement des dates")
+    }
 }

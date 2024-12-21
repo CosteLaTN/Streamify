@@ -1,248 +1,224 @@
 package com.example.streamifymvp.Presentation
 
-import com.example.streamifymvp.Domaine.entitees.Artiste
-import com.example.streamifymvp.Domaine.entitees.Chanson
-import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Domaine.Service.ArtisteService
 import com.example.streamifymvp.Domaine.Service.ChansonService
 import com.example.streamifymvp.Domaine.Service.ListeDeLectureService
-import com.example.streamifymvp.R
-import io.mockk.*
-import kotlinx.coroutines.runBlocking
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import com.example.streamifymvp.Domaine.entitees.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
+import org.mockito.internal.util.reflection.*
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ModeleTests {
+
+    private lateinit var modele: Modele
+
 
     private lateinit var mockChansonService: ChansonService
     private lateinit var mockArtisteService: ArtisteService
     private lateinit var mockListeDeLectureService: ListeDeLectureService
 
-    private lateinit var modele: Modele
+    @Before
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
 
-    @BeforeTest
-    fun setup() {
-        mockChansonService = mockk()
-        mockArtisteService = mockk()
-        mockListeDeLectureService = mockk()
 
-        modele = Modele(mockChansonService, mockArtisteService, mockListeDeLectureService)
+        modele = Modele()
+
+
+        mockChansonService = Mockito.mock(ChansonService::class.java)
+        mockArtisteService = Mockito.mock(ArtisteService::class.java)
+        mockListeDeLectureService = Mockito.mock(ListeDeLectureService::class.java)
+
+
+
     }
 
     @Test
-    fun `etant donne le Modele lorsqu'on appelle obtenirToutesLesChansons alors on obtient la liste de chansons du service`() {
-        // Arrange
-        val chansons = listOf(
+    fun `etant donne que obtenirToutesLesChansons renvoie des chansons lorsqu'on appelle modele_obtenirToutesLesChansons alors on recupere ces chansons`() = runTest {
+        // ARRANGE
+        val chansonsSimulees = listOf(
             Chanson(
                 id = 1,
-                nom = "Dont Cry",
-                datePublication = "2019-09-17",
-                genre = "Rock",
-                dureeAlbum = "45:00",
-                dureeMusique = "4:44",
-                imageChanson = "",
-                fichierAudio = "",
-                albumId = 1,
-                artisteId = 1
-            )
-        )
-        every { mockChansonService.obtenirToutesLesChansons() } returns chansons
-
-        // Act
-        val resultat = modele.obtenirToutesLesChansons()
-
-        // Assert
-        assertEquals(chansons, resultat)
-        verify { mockChansonService.obtenirToutesLesChansons() }
-    }
-
-    @Test
-    fun `etant donne le Modele lorsqu'on appelle obtenirNouveautes alors on obtient la liste des nouveautes du service`() {
-        // Arrange
-        val nouveautes = listOf(
-            Chanson(
-                id = 2,
-                nom = "New Song",
-                datePublication = "2022-01-01",
+                nom = "Song A",
+                datePublication = "2020-01-01",
                 genre = "Pop",
                 dureeAlbum = "40:00",
-                dureeMusique = "3:33",
-                imageChanson = 0,
-                fichierAudio = 0,
-                albumId = 1,
-                artisteId = 1
+                dureeMusique = "3:30",
+                imageChanson = "urlA",
+                fichierAudio = "audioA",
+                albumId = null,
+                artiste = null
             )
         )
-        every { mockChansonService.obtenirNouveautés() } returns nouveautes
+        Mockito.`when`(mockChansonService.obtenirToutesLesChansons()).thenReturn(chansonsSimulees)
 
-        // Act
-        val resultat = modele.obtenirNouveautés()
+        // ACT
+        val resultat = modele.obtenirToutesLesChansons()
 
-        // Assert
-        assertEquals(nouveautes, resultat)
-        verify { mockChansonService.obtenirNouveautés() }
+        // ASSERT
+        assertEquals(chansonsSimulees.size, resultat.size)
+        assertEquals(chansonsSimulees[0].nom, resultat[0].nom)
+        Mockito.verify(mockChansonService).obtenirToutesLesChansons()
     }
 
     @Test
-    fun `etant donne une recherche dans le Modele lorsqu'on appelle rechercherChansons alors on obtient les chansons correspondantes`() {
-        // Arrange
-        val recherche = "Dont Cry"
-        val chansons = listOf(
-            Chanson(
-                id = 1,
-                nom = "Dont Cry",
-                datePublication = "2019-09-17",
-                genre = "Rock",
-                dureeAlbum = "45:00",
-                dureeMusique = "4:44",
-                imageChanson = 0,
-                fichierAudio = 0,
-                albumId = 1,
-                artisteId = 1
-            )
-        )
-        every { mockChansonService.rechercherChansons(recherche) } returns chansons
+    fun `etant donne que obtenirNouveautes renvoie une liste vide lorsqu'on appelle modele_obtenirNouveautes alors on recoit une liste vide`() = runTest {
+        // ARRANGE
+        Mockito.`when`(mockChansonService.obtenirNouveautés()).thenReturn(emptyList())
 
-        // Act
+        // ACT
+        val result = modele.obtenirNouveautés()
+
+        // ASSERT
+        assertTrue(result.isEmpty())
+        Mockito.verify(mockChansonService).obtenirNouveautés()
+    }
+
+    @Test
+    fun `etant donne un mot cle lorsqu'on appelle modele_rechercherChansons alors on obtient la liste renvoyee par le service`() = runTest {
+        // ARRANGE
+        val recherche = "Daft"
+        val chansonsSimulees = listOf(
+            Chanson(2, "One More Time", "2001-03-12", "Electro", "60:00", "5:20", "urlImg", "urlAudio", null, null),
+            Chanson(3, "Aerodynamic", "2001-03-12", "Electro", "60:00", "3:30", "urlImg2", "urlAudio2", null, null)
+        )
+        Mockito.`when`(mockChansonService.rechercherChansons(recherche)).thenReturn(chansonsSimulees)
+
+        // ACT
         val resultat = modele.rechercherChansons(recherche)
 
-        // Assert
-        assertEquals(chansons, resultat)
-        verify { mockChansonService.rechercherChansons(recherche) }
+        // ASSERT
+        assertEquals(chansonsSimulees.size, resultat.size)
+        assertEquals("One More Time", resultat[0].nom)
+        Mockito.verify(mockChansonService).rechercherChansons(recherche)
     }
 
     @Test
-    fun `etant donne le Modele lorsqu'on appelle obtenirNouveauxArtistes alors on obtient la liste des artistes`() {
-        // Arrange
-        val artistes = listOf(
-            Artiste(
-                id = 1,
-                prenom = "Axl",
-                nom = "Rose",
-                pseudoArtiste = "Guns N' Roses",
-                imageArtiste = R.drawable.cry
-            )
+    fun `etant donne obtenirNouveauxArtistes renvoie des artistes lorsqu'on appelle modele_obtenirNouveauxArtistes alors on obtient ces artistes`() = runTest {
+        // ARRANGE
+        val artistesSimules = listOf(
+            Artiste(id = 1, nom = "Smith", prenom = "John", pseudoArtiste = "John Smith", imageArtiste = "img1"),
+            Artiste(id = 2, nom = "Doe", prenom = "Jane", pseudoArtiste = "JaneD", imageArtiste = "img2")
         )
-        every { mockArtisteService.obtenirTousLesArtistes() } returns artistes
+        Mockito.`when`(mockArtisteService.obtenirTousLesArtistes()).thenReturn(artistesSimules)
 
-        // Act
+        // ACT
         val resultat = modele.obtenirNouveauxArtistes()
 
-        // Assert
-        assertEquals(artistes, resultat)
-        verify { mockArtisteService.obtenirTousLesArtistes() }
+        // ASSERT
+        assertEquals(2, resultat.size)
+        assertEquals("John Smith", resultat[0].pseudoArtiste)
+        Mockito.verify(mockArtisteService).obtenirTousLesArtistes()
     }
 
     @Test
-    fun `etant donne une chanson lorsqu'on appelle ajouterChansonAuxFavoris alors chansonService ajoute la chanson aux favoris`() {
-        // Arrange
-        val chanson = Chanson(
-            id = 1,
-            nom = "Dont Cry",
-            datePublication = "2019-09-17",
-            genre = "Rock",
-            dureeAlbum = "45:00",
-            dureeMusique = "4:44",
-            imageChanson = 0,
-            fichierAudio = 0,
-            albumId = 1,
-            artisteId = 1
-        )
+    fun `etant donne qu'on ajoute une chanson aux favoris lorsqu'on appelle ajouterChansonAuxFavoris alors le service est invoque`() = runTest {
+        // ARRANGE
+        val chansonAAjouter = Chanson(42, "TestSong", "2020-01-01", "Rock", "40:00", "3:40", "img", "audio", null, null)
 
-        // Stub la méthode ajouterAuxFavoris pour que MockK sache qu'elle peut être appelée
-        every { mockChansonService.ajouterAuxFavoris(chanson) } just Runs
+        // ACT
+        modele.ajouterChansonAuxFavoris(chansonAAjouter)
 
-        // Act
-        modele.ajouterChansonAuxFavoris(chanson)
-
-        // Assert
-        verify { mockChansonService.ajouterAuxFavoris(chanson) }
+        // ASSERT
+        Mockito.verify(mockChansonService).ajouterAuxFavoris(chansonAAjouter)
     }
 
-
     @Test
-    fun `etant donne le Modele lorsqu'on appelle obtenirFavoris alors on obtient la liste de lecture favoris`() = runBlocking {
-        // Arrange
-        val favoris = ListeDeLecture(
-            id = 1,
-            nom = "Favoris",
-            chansons = mutableListOf(
-                Chanson(
-                    id = 1,
-                    nom = "Dont Cry",
-                    datePublication = "2019-09-17",
-                    genre = "Rock",
-                    dureeAlbum = "45:00",
-                    dureeMusique = "4:44",
-                    imageChanson = R.drawable.cry,
-                    fichierAudio = R.raw.dontcry,
-                    albumId = 1,
-                    artisteId = 1
-                )
-            )
-        )
-        coEvery { mockListeDeLectureService.obtenirListeDeLectureParNom("Favoris") } returns favoris
+    fun `etant donne une playlist Favoris contenant des chansons lorsqu'on appelle obtenirFavoris alors on recupere la playlist`() = runTest {
+        // ARRANGE
+        val favorisSimules = ListeDeLecture(1, "Favoris", mutableListOf())
+        Mockito.`when`(mockListeDeLectureService.obtenirListeDeLectureParNom("Favoris")).thenReturn(favorisSimules)
 
-        // Act
+        // ACT
         val resultat = modele.obtenirFavoris()
 
-        // Assert
-        assertEquals(favoris, resultat)
-        coVerify { mockListeDeLectureService.obtenirListeDeLectureParNom("Favoris") }
+        // ASSERT
+        assertNotNull(resultat)
+        assertEquals("Favoris", resultat!!.nom)
+        Mockito.verify(mockListeDeLectureService).obtenirListeDeLectureParNom("Favoris")
     }
 
     @Test
-    fun `etant donne un id de playlist lorsqu'on appelle obtenirListeDeLectureParId alors on obtient la playlist correspondante`() {
-        // Arrange
-        val playlistId = 1
-        val playlist = ListeDeLecture(
-            id = playlistId,
-            nom = "Rock Classics",
-            chansons = mutableListOf(
-                Chanson(
-                    id = 1,
-                    nom = "Bohemian Rhapsody",
-                    datePublication = "1975-10-31",
-                    genre = "Rock",
-                    dureeAlbum = "5:55",
-                    dureeMusique = "5:55",
-                    imageChanson = 0,
-                    fichierAudio = 0,
-                    albumId = 1,
-                    artisteId = 1
-                )
-            )
-        )
-        every { mockListeDeLectureService.obtenirListeDeLectureParId(playlistId) } returns playlist
+    fun `etant donne un playlistId existant lorsqu'on appelle obtenirListeDeLectureParId alors on recupere la bonne playlist`() = runTest {
+        // ARRANGE
+        val playlistId = 99
+        val playlistMock = ListeDeLecture(playlistId, "Test Playlist")
+        Mockito.`when`(mockListeDeLectureService.obtenirListeDeLectureParId(playlistId)).thenReturn(playlistMock)
 
-        // Act
+        // ACT
         val resultat = modele.obtenirListeDeLectureParId(playlistId)
 
-        // Assert
-        assertEquals(playlist, resultat)
-        verify { mockListeDeLectureService.obtenirListeDeLectureParId(playlistId) }
+        // ASSERT
+        assertEquals(playlistId, resultat?.id)
+        assertEquals("Test Playlist", resultat?.nom)
+        Mockito.verify(mockListeDeLectureService).obtenirListeDeLectureParId(playlistId)
     }
 
     @Test
-    fun `etant donne le Modele lorsqu'on appelle obtenirTousLesArtistes alors on obtient la liste des artistes du service`() {
-        // Arrange
-        val artistes = listOf(
-            Artiste(
-                id = 2,
-                prenom = "will.i.am",
-                nom = "",
-                pseudoArtiste = "The Black Eyed Peas",
-                imageArtiste = R.drawable.placeholder_image
-            )
+    fun `etant donne qu'on veut toutes les playlists lorsqu'on appelle obtenirToutesLesListesDeLecture alors on recupere la liste du service`() = runTest {
+        // ARRANGE
+        val playlistsSimulees = listOf(
+            ListeDeLecture(1, "Favoris"),
+            ListeDeLecture(2, "Rock legends")
         )
-        every { mockArtisteService.obtenirTousLesArtistes() } returns artistes
+        Mockito.`when`(mockListeDeLectureService.obtenirToutesLesListesDeLecture()).thenReturn(playlistsSimulees)
 
-        // Act
-        val resultat = modele.obtenirTousLesArtistes()
+        // ACT
+        val resultat = modele.obtenirToutesLesListesDeLecture()
 
-        // Assert
-        assertEquals(artistes, resultat)
-        verify { mockArtisteService.obtenirTousLesArtistes() }
+        // ASSERT
+        assertEquals(2, resultat.size)
+        assertEquals("Rock legends", resultat[1].nom)
+        Mockito.verify(mockListeDeLectureService).obtenirToutesLesListesDeLecture()
+    }
+
+    @Test
+    fun `etant donne un playlistId et une chanson lorsqu'on appelle ajouterChansonAPlaylist alors le service est invoque`() = runTest {
+        // ARRANGE
+        val playlistId = 123
+        val chansonTest = Chanson(99, "Ma chanson", "2023-01-01", "Pop", "40:00", "3:30", "img", "audio", null, null)
+
+        // ACT
+        modele.ajouterChansonAPlaylist(playlistId, chansonTest)
+
+        // ASSERT
+        Mockito.verify(mockListeDeLectureService).ajouterChansonAPlaylist(playlistId, chansonTest)
+    }
+
+    @Test
+    fun `etant donne un playlist en parametre lorsqu'on appelle ajouterPlaylist alors on appelle le service`() = runTest {
+        // ARRANGE
+        val playlistTest = ListeDeLecture(888, "Nouvelle Playlist")
+
+        // ACT
+        modele.ajouterPlaylist(playlistTest)
+
+        // ASSERT
+        Mockito.verify(mockListeDeLectureService).ajouterPlaylist(playlistTest)
+    }
+
+    @Test
+    fun `etant donne un playlistId lorsqu'on appelle obtenirChansonsDeLaListeDeLecture alors on obtient la liste du service`() = runTest {
+        // ARRANGE
+        val playlistId = 10
+        val chansonsSimulees = listOf(
+            Chanson(1, "C1", "2021-01-01", "Genre1", "40:00", "3:20", "imgC1", "audioC1", null, null),
+            Chanson(2, "C2", "2022-01-01", "Genre2", "40:00", "3:50", "imgC2", "audioC2", null, null),
+        )
+        Mockito.`when`(mockListeDeLectureService.obtenirChansonsDeLaListeDeLecture(playlistId)).thenReturn(chansonsSimulees)
+
+        // ACT
+        val resultat = modele.obtenirChansonsDeLaListeDeLecture(playlistId)
+
+        // ASSERT
+        assertEquals(chansonsSimulees.size, resultat.size)
+        assertEquals("C2", resultat[1].nom)
+        Mockito.verify(mockListeDeLectureService).obtenirChansonsDeLaListeDeLecture(playlistId)
     }
 }

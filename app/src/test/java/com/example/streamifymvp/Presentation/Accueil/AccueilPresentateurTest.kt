@@ -1,78 +1,177 @@
-package com.example.streamifymvp.Presentation.Accueil
+package com.example.streamify.Presentation.Accueil
 
-import android.util.Log
-import com.example.streamify.Presentation.Accueil.AccueilPresentateur
-import com.example.streamify.Presentation.Accueil.AccueilVue
 import com.example.streamifymvp.Domaine.entitees.Artiste
 import com.example.streamifymvp.Domaine.entitees.Chanson
+import com.example.streamifymvp.Presentation.Accueil.IAccueilPresentateur
 import com.example.streamifymvp.Presentation.Modele
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
+import com.example.streamify.Presentation.Accueil.AccueilVue
+import kotlin.test.* // @BeforeTest, @Test, assertEquals, etc.
+import kotlinx.coroutines.test.runTest
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
+/**
+ * Exemple de test pour AccueilPresentateur, inspiré de la nomenclature du test TéléchargementServiceTests.
+ */
 class AccueilPresentateurTest {
+
 
     private lateinit var vue: AccueilVue
     private lateinit var modele: Modele
     private lateinit var presentateur: AccueilPresentateur
 
-    @Before
-    fun setup() {
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
+    @BeforeTest
+    fun initMocks() {
 
-        vue = mockk(relaxed = true)
-        modele = mockk()
+        vue = Mockito.mock(AccueilVue::class.java)
+        modele = Mockito.mock(Modele::class.java)
+
+
         presentateur = AccueilPresentateur(vue, modele)
     }
 
     @Test
-    fun `etant donne des chansons, nouveautes et artistes lorsque chargerAccueil alors vue affiche tout`() {
-        // Arrange
-        val chansons = listOf(Chanson(1, "Test", "2020-01-01", "Rock", "X", "Y", "img", "audio", 1,1))
-        val nouveautes = listOf(Chanson(2, "Nouveau", "2021-01-01", "Pop", "X","Y","img2","audio2",1,1))
-        val artistes = listOf(Artiste(1,"Axl","Rose","Guns N' Roses","img"))
-        every { modele.obtenirToutesLesChansons() } returns chansons
-        every { modele.obtenirNouveautés() } returns nouveautes
-        every { modele.obtenirNouveauxArtistes() } returns artistes
+    fun `etant donne un AccueilPresentateur lorsque je charge l'accueil alors on affiche chansons, nouveautes et artistes`() = runTest {
+        // ARRANGE
+        val chansonsSimulees = listOf(
+            Chanson(
+                id = 1,
+                nom = "Song 1",
+                datePublication = "2023-01-01",
+                genre = "Pop",
+                dureeAlbum = "45:00",
+                dureeMusique = "3:30",
+                imageChanson = "http://test.com/img.jpg",
+                fichierAudio = "http://test.com/audio.mp3",
+                albumId = null,
+                artiste = Artiste(
+                    id = 11,
+                    nom = "Toto",
+                    prenom = "Titi",
+                    pseudoArtiste = "TotoTiti",
+                    imageArtiste = "http://test.com/art.png",
 
-        // Act
+                )
+            )
+        )
+        val nouveautesSimulees = listOf(
+            Chanson(
+                id = 2,
+                nom = "Song 2",
+                datePublication = "2023-07-10",
+                genre = "Rock",
+                dureeAlbum = "40:00",
+                dureeMusique = "4:00",
+                imageChanson = "http://test.com/img2.jpg",
+                fichierAudio = "http://test.com/audio2.mp3",
+                albumId = null,
+                artiste = null
+            )
+        )
+        val artistesSimules = listOf(
+            Artiste(
+                id = 100,
+                nom = "Test",
+                prenom = "John",
+                pseudoArtiste = "JohnTest",
+                imageArtiste = "http://test.com/artist.jpg"
+            )
+        )
+
+        whenever(modele.obtenirToutesLesChansons()).thenReturn(chansonsSimulees)
+        whenever(modele.obtenirNouveautés()).thenReturn(nouveautesSimulees)
+        whenever(modele.obtenirNouveauxArtistes()).thenReturn(artistesSimules)
+
+        // ACT
         presentateur.chargerAccueil()
 
-        // Assert
+        // ASSERT
+        verify(vue).afficherChansons(chansonsSimulees)
+        verify(vue).afficherNouveautés(nouveautesSimulees)
+        verify(vue).afficherNouveauxArtistes(artistesSimules)
 
-        assertTrue(true)
+
+        verify(vue, never()).afficherMessageAucunRésultat()
     }
 
     @Test
-    fun `etant donne une exception lorsque chargerAccueil alors vue affiche message aucun resultat`() {
-        every { modele.obtenirToutesLesChansons() } throws RuntimeException("erreur")
+    fun `etant donne un AccueilPresentateur lorsque je charge l'accueil et qu'une exception survient alors on affiche message aucun resultat`() = runTest {
+        // ARRANGE
+        whenever(modele.obtenirToutesLesChansons()).thenThrow(RuntimeException("Erreur"))
 
+        // ACT
         presentateur.chargerAccueil()
 
-
-        assertTrue(true)
+        // ASSERT
+        verify(vue).afficherMessageAucunRésultat()
+        verify(vue, never()).afficherChansons(any())
+        verify(vue, never()).afficherNouveautés(any())
+        verify(vue, never()).afficherNouveauxArtistes(any())
     }
 
     @Test
-    fun `etant donne une recherche non vide lorsque rechercherChansons alors vue affiche resultats`() {
-        val resultats = listOf(Chanson(3,"Test2","2020-01-01","Rock","X","Y","img3","audio3",1,1))
-        every { modele.rechercherChansons("test") } returns resultats
+    fun `etant donne un AccueilPresentateur et une recherche non-vide lorsqu'on appelle rechercherChansons et que des resultats existent alors on affiche ces chansons`() = runTest {
+        // ARRANGE
+        val recherche = "Daft Punk"
+        val resultats = listOf(
+            Chanson(
+                id = 3,
+                nom = "One More Time",
+                datePublication = "2001-03-12",
+                genre = "Electronique",
+                dureeAlbum = "60:00",
+                dureeMusique = "3:30",
+                imageChanson = "http://test.com/daft.jpg",
+                fichierAudio = "http://test.com/daft.mp3",
+                albumId = null,
+                artiste = null,
 
-        presentateur.rechercherChansons("test")
 
-        assertTrue(true)
+            )
+        )
+        whenever(modele.rechercherChansons(eq(recherche))).thenReturn(resultats)
+
+        // ACT
+        presentateur.rechercherChansons(recherche)
+
+        // ASSERT
+        verify(vue).afficherChansons(resultats)
+        verify(vue, never()).afficherMessageAucunRésultat()
     }
 
     @Test
-    fun `etant donne une recherche vide lorsque rechercherChansons alors vue affiche aucun resultat`() {
-        every { modele.rechercherChansons("test") } returns emptyList()
+    fun `etant donne un AccueilPresentateur et une recherche non-vide lorsqu'on appelle rechercherChansons et que aucun resultat alors on affiche message aucun resultat`() = runTest {
+        // ARRANGE
+        val recherche = "Inexistant"
+        whenever(modele.rechercherChansons(eq(recherche))).thenReturn(emptyList())
 
-        presentateur.rechercherChansons("test")
+        // ACT
+        presentateur.rechercherChansons(recherche)
 
-        assertTrue(true)
+        // ASSERT
+        verify(vue).afficherMessageAucunRésultat()
+        verify(vue, never()).afficherChansons(any())
+    }
+
+    @Test
+    fun `etant donne un AccueilPresentateur et une recherche lorsqu'on appelle rechercherChansons et qu'une exception survient alors on affiche message aucun resultat`() = runTest {
+        // ARRANGE
+        val recherche = "CrashTest"
+        whenever(modele.rechercherChansons(eq(recherche))).thenThrow(RuntimeException("Erreur interne"))
+
+        // ACT
+        presentateur.rechercherChansons(recherche)
+
+        // ASSERT
+        verify(vue).afficherMessageAucunRésultat()
+        verify(vue, never()).afficherChansons(any())
     }
 }

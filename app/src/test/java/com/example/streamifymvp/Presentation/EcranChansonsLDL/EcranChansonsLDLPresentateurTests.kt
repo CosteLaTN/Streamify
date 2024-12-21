@@ -1,43 +1,125 @@
 package com.example.streamifymvp.Presentation.EcranChansonsLDL
 
-import android.util.Log
 import com.example.streamifymvp.Domaine.entitees.Chanson
 import com.example.streamifymvp.Domaine.entitees.ListeDeLecture
 import com.example.streamifymvp.Presentation.Modele
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class EcranChansonsLDLPresentateurTests {
 
-    private lateinit var modele: Modele
-    private lateinit var presentateur: EcranChansonsLDLPresentateur
+    private lateinit var mockModèle: Modele
+    private lateinit var présentateur: EcranChansonsLDLPresentateur
 
     @Before
-    fun setup() {
-
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
-
-        modele = mockk()
-        presentateur = EcranChansonsLDLPresentateur(modele)
+    fun initMocks() {
+        mockModèle = Mockito.mock(Modele::class.java)
+        présentateur = EcranChansonsLDLPresentateur(mockModèle)
     }
 
     @Test
-    fun `etant donne un id de playlist lorsqu'on appelle obtenirChansonsDeLaListeDeLecture alors retourner la liste des chansons`() {
-        // Arrange
+    fun `étant donné un id de playlist valide lorsqu'on obtient les chansons de la playlist on obtient une liste non vide`() = runTest {
         val playlistId = 1
-        val chansons = listOf(Chanson(1, "Song 1", "2022-01-01", "Pop", "3:45", "3:45", 0, 0, 1, 1))
-        val playlist = ListeDeLecture(playlistId, "Playlist 1", chansons.toMutableList())
-        every { modele.obtenirListeDeLectureParId(playlistId) } returns playlist
+        val chansons = listOf(
+            Chanson(
+                id = 101,
+                nom = "Chanson 1",
+                datePublication = "2023-01-01",
+                genre = "Pop",
+                dureeAlbum = "3:45",
+                dureeMusique = "3:45",
+                imageChanson = "image_url",
+                fichierAudio = "audio_url",
+                albumId = 1,
+                artiste = null
+            )
+        )
+        val playlist = ListeDeLecture(
+            id = playlistId,
+            nom = "Ma Playlist",
+            chansons = chansons.toMutableList()
+        )
 
-        // Act
-        val result = presentateur.obtenirChansonsDeLaListeDeLecture(playlistId)
+        Mockito.`when`(mockModèle.obtenirListeDeLectureParId(playlistId)).thenReturn(playlist)
 
-        // Assert
-        assertEquals(chansons, result)
+        val résultat = présentateur.obtenirChansonsDeLaListeDeLecture(playlistId)
+
+        assertNotNull(résultat)
+        assertTrue(résultat.isNotEmpty())
+        assertEquals("Chanson 1", résultat.first().nom)
+    }
+
+    @Test
+    fun `étant donné un id de playlist invalide lorsqu'on obtient les chansons de la playlist on obtient une liste vide`() = runTest {
+        val playlistId = -1
+        Mockito.`when`(mockModèle.obtenirListeDeLectureParId(playlistId)).thenReturn(null)
+
+        val résultat = présentateur.obtenirChansonsDeLaListeDeLecture(playlistId)
+
+        assertNotNull(résultat)
+        assertTrue(résultat.isEmpty())
+    }
+
+    @Test
+    fun `étant donné un id de playlist valide lorsqu'on obtient les détails de la playlist on obtient un objet ListeDeLecture avec un nom valide`() = runTest {
+        val playlistId = 2
+        val playlist = ListeDeLecture(
+            id = playlistId,
+            nom = "Playlist Test",
+            chansons = mutableListOf()
+        )
+
+        Mockito.`when`(mockModèle.obtenirListeDeLectureParId(playlistId)).thenReturn(playlist)
+
+        val résultat = présentateur.obtenirDetailsListeDeLecture(playlistId)
+
+        assertNotNull(résultat)
+        assertEquals("Playlist Test", résultat?.nom)
+    }
+
+    @Test
+    fun `étant donné un id de playlist invalide lorsqu'on obtient les détails de la playlist on obtient null`() = runTest {
+        val playlistId = -1
+        Mockito.`when`(mockModèle.obtenirListeDeLectureParId(playlistId)).thenReturn(null)
+
+        val résultat = présentateur.obtenirDetailsListeDeLecture(playlistId)
+
+        assertEquals(null, résultat)
+    }
+
+    @Test
+    fun `étant donné un id d'artiste valide lorsqu'on obtient le pseudo de l'artiste on obtient un pseudo valide`() = runTest {
+        val artisteId = 10
+        val pseudo = "Artiste Test"
+        Mockito.`when`(mockModèle.obtenirTousLesArtistes()).thenReturn(
+            listOf(
+                com.example.streamifymvp.Domaine.entitees.Artiste(
+                    id = artisteId,
+                    nom = "Nom",
+                    prenom = "Prénom",
+                    pseudoArtiste = pseudo,
+                    imageArtiste = "image_url"
+                )
+            )
+        )
+
+        val résultat = présentateur.obtenirPseudoArtiste(artisteId)
+
+        assertEquals(pseudo, résultat)
+    }
+
+    @Test
+    fun `étant donné un id d'artiste invalide lorsqu'on obtient le pseudo de l'artiste on obtient Artiste inconnu`() = runTest {
+        val artisteId = 999
+        Mockito.`when`(mockModèle.obtenirTousLesArtistes()).thenReturn(emptyList())
+
+        val résultat = présentateur.obtenirPseudoArtiste(artisteId)
+
+        assertEquals("Artiste inconnu", résultat)
     }
 }

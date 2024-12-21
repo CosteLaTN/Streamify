@@ -94,7 +94,8 @@ class SourceDeDonneeHTTP : ISourceDeDonnee {
     override fun obtenirHistoriqueRecherche(): List<String> {
         return historique
     }
- //API
+
+
     private val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     private val datesDisponibles = listOf(
         ShowDate(
@@ -121,40 +122,7 @@ class SourceDeDonneeHTTP : ISourceDeDonnee {
         return datesDisponibles
     }
 
-    //override fun obtenirToutesLesDatesDeShow(): List<ShowDate> = emptyList()
-    //A  bouger dans l'API
-    private val artistes = listOf(
-        Artiste(
-            id = 1,
-            prenom = "Axl",
-            nom = "Rose",
-            pseudoArtiste = "Guns N' Roses",
-            imageArtiste = "http://192.168.182.1/images/cry.jpg"
-        ),
-        Artiste(
-            id = 2,
-            prenom = "will.i.am",
-            nom = "",
-            pseudoArtiste = "The Black Eyed Peas",
-            imageArtiste ="http://192.168.182.1/images/cry.jpg"
-        ),
-        Artiste(
-            id = 3,
-            prenom = "Guy-Manuel de Homem-Christo",
-            nom = "& Thomas Bangalter",
-            pseudoArtiste = "Daft Punk",
-            imageArtiste = "http://192.168.182.1/images/cry.jpg"
-        )
-    )
 
-    //A bouger dans l'API
-    private val listesDeLecture = mutableListOf<ListeDeLecture>(
-        ListeDeLecture(
-            id = 1,
-            nom = "Favoris",
-            chansons = mutableListOf()
-        )
-    )
 
 
 }
