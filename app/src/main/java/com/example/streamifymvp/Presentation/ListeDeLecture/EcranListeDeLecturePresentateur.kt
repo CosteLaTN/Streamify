@@ -40,7 +40,7 @@ class EcranListeDeLecturePresentateur(
                 withContext(ioDispatcher) {
                     modele.ajouterPlaylist(nouvellePlaylist)
                 }
-                chargerListesDeLecture() // Rafraîchir les playlists après l'ajout
+                chargerListesDeLecture()
                 vue.afficherMessageSucces("Playlist '$nom' ajoutée avec succès.")
             } catch (e: Exception) {
                 vue.afficherMessageErreur("Erreur lors de la création de la playlist.")

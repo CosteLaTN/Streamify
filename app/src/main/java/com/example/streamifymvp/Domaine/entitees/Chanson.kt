@@ -10,5 +10,5 @@ data class Chanson(
     val imageChanson: String,
     val fichierAudio: String,
     val albumId: Int?,
-    val artiste: Artiste? // Inclure l'objet Artiste au lieu de artisteId
+    val artiste: Artiste?
 )

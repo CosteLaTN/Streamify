@@ -37,11 +37,11 @@ class HistoriqueVue : Fragment(), ContratVuePrésentateurHistorique.IHistoriqueV
         listView = view.findViewById(R.id.history_list_view)
         navController = findNavController()
 
-        // Initialisation du présentateur avec SourceDeDonneeHTTP
+
         val sourceDeDonnee: ISourceDeDonnee = SourceDeDonneeHTTP()
         presentateur = HistoriquePrésentateur(this, sourceDeDonnee, Dispatchers.IO)
 
-        // Charger l'historique des recherches
+
         presentateur.chargerHistoriqueRecherche()
 
         configurerBottomNavigation(view)

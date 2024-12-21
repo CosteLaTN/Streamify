@@ -91,7 +91,7 @@ class EcranAccueil : Fragment(), AccueilVue {
         recyclerViewNouveauxArtistes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerViewNouveauxArtistes.adapter = artistesAdapter
 
-        // Chargement des données via coroutines
+
         lifecycleScope.launch {
             try {
                 val chansons = modèle.obtenirToutesLesChansons().take(6)

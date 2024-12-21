@@ -32,12 +32,12 @@ class ProfilPresentateurTests {
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // Remet à zéro le Main dispatcher après chaque test.
+        Dispatchers.resetMain()
     }
 
     @Test
     fun `etant donne un profil null lorsqu'on appelle chargerProfil alors afficher message d'erreur`() = runTest {
-        // Arrange : Configurer le mock pour retourner null
+
         coEvery { service.obtenirProfil() } returns null
 
         // Act

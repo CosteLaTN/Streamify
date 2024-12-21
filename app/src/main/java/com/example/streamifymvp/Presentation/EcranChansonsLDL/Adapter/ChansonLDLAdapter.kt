@@ -19,8 +19,8 @@ import kotlinx.coroutines.withContext
 class ChansonLDLAdapter(
     private var chansons: List<Chanson>,
     private val présentateur: EcranChansonsLDLPresentateur,
-    private val parentFragment: EcranChansonsLDL, // Référence au fragment pour lancer une coroutine
-    private val onChansonClick: (Chanson, List<Chanson>) -> Unit // Nouveau click listener qui prend la chanson et la liste de chansons
+    private val parentFragment: EcranChansonsLDL,
+    private val onChansonClick: (Chanson, List<Chanson>) -> Unit
 ) : RecyclerView.Adapter<ChansonLDLAdapter.ChansonViewHolder>() {
 
     inner class ChansonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,7 +31,7 @@ class ChansonLDLAdapter(
         fun bind(chanson: Chanson) {
             titreTextView.text = chanson.nom
 
-            // Charger le nom de l'artiste depuis l'API
+
             parentFragment.lifecycleScope.launch(Dispatchers.IO) {
                 val artiste = chanson.artiste
                 withContext(Dispatchers.Main) {
@@ -39,7 +39,7 @@ class ChansonLDLAdapter(
                 }
             }
 
-            // Charger l'image via l'API
+
             Glide.with(itemView.context)
                 .load(chanson.imageChanson)
                 .placeholder(R.drawable.placeholder_image)

@@ -13,27 +13,27 @@ class AccueilPresentateur(
 ) : IAccueilPresentateur {
 
     override fun chargerAccueil() {
-        // Lancement d'une coroutine pour les appels suspendus
+
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                // Récupération des données via les méthodes suspendues
+
                 val chansons = modèle.obtenirToutesLesChansons()
                 val nouveautés = modèle.obtenirNouveautés()
                 val artistes = modèle.obtenirNouveauxArtistes()
 
-                // Mise à jour de la vue
+
                 vue.afficherChansons(chansons)
                 vue.afficherNouveautés(nouveautés)
                 vue.afficherNouveauxArtistes(artistes)
             } catch (e: Exception) {
-                // Gestion des erreurs
+
                 vue.afficherMessageAucunRésultat()
             }
         }
     }
 
     override fun rechercherChansons(recherche: String) {
-        // Lancement d'une coroutine pour la recherche
+
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val résultats = modèle.rechercherChansons(recherche)

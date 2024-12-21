@@ -18,7 +18,7 @@ class LecturePresentateurTests {
     private lateinit var modele: Modele
     private lateinit var presentateur: LecturePresentateur
 
-    // Utiliser un TestDispatcher pour remplacer le Dispatcher par défaut pendant les tests
+    s
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -30,7 +30,7 @@ class LecturePresentateurTests {
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // Réinitialiser le Dispatcher principal après chaque test
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -42,7 +42,7 @@ class LecturePresentateurTests {
         // Act
         var result: ListeDeLecture? = null
         presentateur.obtenirFavoris { result = it }
-        testDispatcher.scheduler.advanceUntilIdle() // Avancer les coroutines jusqu'à ce qu'elles soient terminées
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // Assert
         assertEquals(favoris, result)

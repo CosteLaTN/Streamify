@@ -29,12 +29,12 @@ class ShowDatesPresentateurTests {
 
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher) // Redirige Dispatchers.Main vers testDispatcher
+        Dispatchers.setMain(testDispatcher)
         vue = mockk(relaxed = true)
-        service = mockk() // Créer un mock de SourceDeDonneeBidon
+        service = mockk()
         presentateur = ShowDatesPrésentateur(vue, service)
 
-        // Mock des méthodes de `SourceDeDonneeBidon`
+
         coEvery { service.obtenirToutesLesDatesDeShow() } returns listOf(
             ShowDate("Concert de Daft Punk", "Un concert légendaire de Daft Punk", mockk(), "Paris, France")
         )
@@ -42,7 +42,7 @@ class ShowDatesPresentateurTests {
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // Réinitialise Dispatchers.Main après chaque test
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -54,25 +54,25 @@ class ShowDatesPresentateurTests {
             ShowDate("Concert de Daft Punk", "Un concert légendaire de Daft Punk", date, "Paris, France")
         )
 
-        // Mocking le comportement du service
+
         coEvery { service.obtenirToutesLesDatesDeShow() } returns expectedDates
 
         // Act
         presentateur.chargerDates()
-        advanceUntilIdle()  // Assurez-vous que toutes les coroutines sont terminées
+        advanceUntilIdle()
 
         // Assert
         val slot = slot<List<ShowDate>>()
         coVerify { vue.afficherDates(capture(slot)) }
 
-        // Vérification des valeurs capturées
+
         val capturedDates = slot.captured
         assertEquals(expectedDates.size, capturedDates.size)
         assertEquals(expectedDates[0].title, capturedDates[0].title)
         assertEquals(expectedDates[0].details, capturedDates[0].details)
         assertEquals(expectedDates[0].location, capturedDates[0].location)
 
-        // Convertir la date en String et comparer
+
         val expectedDateString = dateFormat.format(expectedDates[0].date)
         val capturedDateString = dateFormat.format(capturedDates[0].date)
         assertEquals(expectedDateString, capturedDateString)

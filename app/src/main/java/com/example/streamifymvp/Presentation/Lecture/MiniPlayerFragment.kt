@@ -40,7 +40,7 @@ class MiniPlayerFragment(
         albumArt = view.findViewById(R.id.mini_player_album_art)
         progressBar = view.findViewById(R.id.mini_player_progress)
 
-        // Mise à jour de l'interface utilisateur
+
         songTitle.text = chansonActuelle.nom
         artistName.text = chansonActuelle.artiste?.pseudoArtiste
         Glide.with(requireContext())
@@ -52,11 +52,11 @@ class MiniPlayerFragment(
             val isCurrentChansonPlaying = MediaPlayerManager.getMediaPlayer()?.isPlayingCurrentChanson(chansonActuelle) == true
 
             if (!isCurrentChansonPlaying && !isPlaying) {
-                // Cacher le MiniPlayer si une autre chanson est jouée ou si aucune chanson n'est en lecture
+
                 val miniPlayerContainer = requireActivity().findViewById<FrameLayout>(R.id.miniPlayerContainer)
                 miniPlayerContainer.visibility = View.GONE
             } else {
-                // Met à jour le bouton Play/Pause uniquement si la chanson correspond
+
                 playPauseButton.setImageResource(if (isPlaying) R.drawable.pause else R.drawable.play)
             }
         }

@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 
 class EcranLecture : Fragment(), IEcranLecture {
 
-    // Déclarations des boutons et vues
+
     private lateinit var progressBar: SeekBar
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnPrevious: ImageButton
@@ -58,7 +58,7 @@ class EcranLecture : Fragment(), IEcranLecture {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialisation des vues
+
         progressBar = view.findViewById(R.id.progressBar)
         btnPlayPause = view.findViewById(R.id.btnPlayPause)
         btnPrevious = view.findViewById(R.id.btnPrevious)
@@ -72,9 +72,9 @@ class EcranLecture : Fragment(), IEcranLecture {
         artistName = view.findViewById(R.id.artistName)
         imageAlbum = view.findViewById(R.id.imageAlbum)
 
-        // Récupération des arguments
+
         val chansonId = arguments?.getInt("chansonId") ?: -1
-        val playlistId = arguments?.getInt("playlistId", -1) ?: -1 // Nouvelle source
+        val playlistId = arguments?.getInt("playlistId", -1) ?: -1
         val source = if (playlistId != -1) "playlist" else "genre"
         if (chansonId == -1) {
             Toast.makeText(requireContext(), "Erreur : Chanson introuvable", Toast.LENGTH_SHORT).show()

@@ -5,7 +5,7 @@ import retrofit2.http.*
 
 interface ApiService {
 
-    // Artistes
+
     @GET("artistes")
     suspend fun getAllArtistes(): List<Artiste>
 
@@ -15,7 +15,7 @@ interface ApiService {
     @GET("artistes/recherche")
     suspend fun searchArtistes(@Query("pseudoArtiste") pseudoArtiste: String): List<Artiste>
 
-    // Chansons
+
     @GET("chansons")
     suspend fun getAllChansons(): List<Chanson>
 
@@ -25,7 +25,7 @@ interface ApiService {
     @GET("chansons/recherche")
     suspend fun searchChansons(@Query("nom") nom: String): List<Chanson>
 
-    // Listes de lecture
+
     @GET("listesLecture")
     suspend fun getAllPlaylists(): List<ListeDeLecture>
 

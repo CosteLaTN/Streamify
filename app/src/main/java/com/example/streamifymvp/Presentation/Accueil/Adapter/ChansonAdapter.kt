@@ -41,10 +41,9 @@ class ChansonAdapter(
         holder.titreView.text = chanson.nom
         holder.artisteText.text = artiste?.pseudoArtiste ?: "Artiste inconnu"
 
-        // Utilisation de Glide pour charger l'image depuis l'API
+
         Glide.with(holder.itemView.context)
             .load(chanson.imageChanson)
-            //.placeholder(R.drawable.placeholder_image) // Image par défaut
             .into(holder.imageView)
 
         holder.itemView.setOnClickListener {

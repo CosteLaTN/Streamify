@@ -18,7 +18,7 @@ class EcranChansonsLDLPresentateurTests {
 
     @Before
     fun setup() {
-        // Mocking static methods of Log class
+
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
 

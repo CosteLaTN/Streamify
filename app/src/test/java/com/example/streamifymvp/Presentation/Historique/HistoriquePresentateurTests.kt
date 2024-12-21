@@ -29,12 +29,12 @@ class HistoriquePresentateurTests {
         MockitoAnnotations.openMocks(this)
 
         Dispatchers.setMain(testDispatcher)
-        presentateur = HistoriquePrésentateur(vue, service, testDispatcher) // Passer l'instance du dispatcher mocké
+        presentateur = HistoriquePrésentateur(vue, service, testDispatcher)
     }
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // Réinitialiser le Dispatcher principal après chaque test
+        Dispatchers.resetMain()
     }
 
     @Test

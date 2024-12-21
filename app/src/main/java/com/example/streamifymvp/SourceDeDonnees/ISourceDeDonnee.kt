@@ -9,7 +9,7 @@ interface ISourceDeDonnee {
     fun obtenirHistoriqueRecherche(): List<String>
     fun obtenirToutesLesDatesDeShow(): List<ShowDate>
 
-    // Ajoutez `suspend` pour les méthodes réseau
+
     suspend fun obtenirTousLesArtistes(): List<Artiste>
     suspend fun obtenirArtisteParId(id: Int): Artiste?
     suspend fun rechercherArtistes(recherche: String): List<Artiste>
@@ -19,7 +19,7 @@ interface ISourceDeDonnee {
     suspend fun ajouterPlaylist(playlist: ListeDeLecture)
     suspend fun ajouterChansonALaPlaylist(playlistId: Int, chanson: Chanson)
 
-    // Méthodes locales
+
      suspend fun obtenirPlaylist(nom: String): ListeDeLecture?
 
     suspend fun obtenirFavoris(): ListeDeLecture?

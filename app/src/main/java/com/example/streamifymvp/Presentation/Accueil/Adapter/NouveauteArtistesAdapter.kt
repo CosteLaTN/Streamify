@@ -28,7 +28,7 @@ class NouveauxArtistesAdapter(private var artistes: List<Artiste>) :
         val artiste = artistes[position]
         holder.pseudoArtisteView.text = artiste.pseudoArtiste
 
-        // Charger l'image via l'API
+
         Glide.with(holder.itemView.context)
             .load(artiste.imageArtiste)
 
